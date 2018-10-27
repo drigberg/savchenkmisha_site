@@ -2,13 +2,8 @@
  * Module dependencies
  */
 
-const Ajv = require('ajv')
 const uuid = require('uuid')
-
-/**
- * Module variables
- */
-const ajv = new Ajv()
+const _ = require('lodash')
 
 /**
  * Module
@@ -25,64 +20,64 @@ class Projects {
     this.schema = {}
   }
 
-  validate(data) {
-    const valid = ajv.validate(this.schema, data)
-
-    if (!valid) {
-      console.log('Validation error:', ajv.errors)
-
-      return {
-        success: false,
-        error: ajv.errors,
-      }
-    }
-
-    return {
-      success: true,
-      error: null,
-    }
+  prepareData(data) {
+    return _.pickBy({
+      id: data.id,
+      title: data.title,
+      description: data.description,
+      images: data.images || [],
+    })
   }
 
   list() {
-    return this.store.data.projects
+    return Object.values(this.store.data.projects)
   }
 
   read(id) {
-    const project = this.store.data.projects.find(item => item.id === id)
+    const project = this.store.data.projects[id]
     if (!project) {
-      throw new Error('Project not found')
+      throw new Error(`Project not found with id ${id}`)
     }
 
     return project
   }
 
   insert(data) {
-    const project = Object.assign(
-      {},
-      data,
-      {
-        id: uuid.v1()
-      }
-    )
+    const id = uuid.v1()
 
-    this.store.data.projects.push(project)
+    const project = this.prepareData({
+      id,
+      ...data,
+    })
+
+    this.store.data.projects[id] = project
     this.store.save()
 
     return project
   }
 
   update(id, data) {
-    const project = this.read(id)
-    Object.assign(project, data)
+    const project = this.prepareData({
+      ...this.read(id),
+      ...data
+    })
+
+    this.store.data.projects[id] = project
+
     this.store.save()
 
     return project
   }
 
   remove(id) {
-    const project = this.read(id)
+    delete this.store.data.projects[id]
+    this.store.save()
 
-    this.store.data.projects.splice(this.store.data.projects.indexOf(project), 1)
+    return this.store.data.projects
+  }
+
+  removeAll() {
+    this.store.data.projects = {}
     this.store.save()
 
     return this.store.data.projects

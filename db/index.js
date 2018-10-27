@@ -10,7 +10,13 @@ const Store = require('./Store')
  * Module
  */
 
-const store = new Store(path.join(__dirname, 'db.json'))
+let storePath = 'db.json'
+
+if (process.env.NODE_ENV === 'test') {
+  storePath = 'db.test.json'
+}
+
+const store = new Store(path.join(__dirname, storePath))
 
 /**
  * Module exports

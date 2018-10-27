@@ -13,15 +13,15 @@ class Store {
   constructor(dbPath) {
     this.path = dbPath
 
-    if (!fs.existsSync(this.dbPath)) {
-      fs.writeFileSync(this.dbPath, JSON.stringify({}))
+    if (!fs.existsSync(this.path)) {
+      fs.writeFileSync(this.path, JSON.stringify({}))
     }
 
-    this.data = fs.readFileSync(dbPath)
+    this.data = JSON.parse(fs.readFileSync(this.path))
   }
 
   save() {
-    fs.writeFileSync(this.dbPath, this.data)
+    fs.writeFileSync(this.path, JSON.stringify(this.data))
   }
 }
 

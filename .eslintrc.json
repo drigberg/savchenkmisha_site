@@ -3,19 +3,21 @@
         "eslint:recommended"
     ],
     "parserOptions": {
-        "ecmaVersion": 8
+        "ecmaVersion": 2018
     },
     "globals": {
         "angular": false,
         "module": true,
         "document": true,
         "console": true,
-        "inject": false
+        "inject": false,
+        "Promise": true
     },
     "env": {
         "browser": true,
         "amd": true,
-        "node": true
+        "node": true,
+        "mocha": true
     },
     "rules": {
         "no-console": 0,
@@ -39,6 +41,7 @@
         "no-return-await": 2,
         "no-self-assign": 2,
         "no-self-compare": 2,
+        "no-unused-vars": ["error", { "ignoreRestSiblings": true }],
         "no-unused-expressions": 2,
         "no-useless-return": 2,
         "require-await": 2,

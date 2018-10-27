@@ -1,5 +1,7 @@
 # app
 .env.json
+db/db.json
+public/project_assets
 
 # OSX
 .DS_Store
