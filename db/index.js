@@ -3,6 +3,7 @@
  */
 
 const path = require('path')
+const Admin = require('./Admin')
 const Projects = require('./Projects')
 const Store = require('./Store')
 
@@ -23,5 +24,6 @@ const store = new Store(path.join(__dirname, storePath))
  */
 
 module.exports = {
-  projects: new Projects(store)
+  admin: new Admin(store),
+  projects: new Projects(store),
 }

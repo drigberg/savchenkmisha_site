@@ -15,5 +15,5 @@ const server = require('../server')
  * Module
  */
 
-before(server.start)
-after(server.stop)
+before(() => server.start())
+after(() => server.stop())
