@@ -30,6 +30,30 @@ Project structure:
 }
 ```
 
+### POST /change_password
+Request:
+```js
+{
+  username: <string>,
+  new_password: <string>
+}
+```
+
+On success, will redirect to homepage, logged out.
+On failure, will send statusCode 500.
+
+### POST /change_username
+Request:
+```js
+{
+  new_username: <string>,
+  password: <string>
+}
+```
+
+On success, will redirect to homepage, logged out.
+On failure, will send statusCode 500.
+
 ### POST /login
 - logs in user
 

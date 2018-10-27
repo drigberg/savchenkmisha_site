@@ -76,6 +76,31 @@ app.post('/login', passport.authenticate('local', {
   failureRedirect: '/login',
 }))
 
+app.post('/change_password', authenticate, function(req, res) {
+  if (!db.admin.checkPassword(req.body.current_password)) {
+    res.status(500).send('incorrect password')
+    return
+  }
+
+
+  db.admin.updatePassword(req.body.new_password)
+
+  req.logout()
+  res.redirect('/')
+})
+
+app.post('/change_username', authenticate, function(req, res) {
+  if (!db.admin.checkPassword(req.body.password)) {
+    res.status(500).send('incorrect password')
+    return
+  }
+
+  db.admin.updateUsername(req.body.new_username)
+
+  req.logout()
+  res.redirect('/')
+})
+
 app.get('/projects', authenticate, function(req, res){
   const projects = db.projects.list()
   res.json(projects)

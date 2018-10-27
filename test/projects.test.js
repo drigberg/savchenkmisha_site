@@ -17,7 +17,7 @@ describe('projects', () => {
   before(async () => {
     db.projects.removeAll()
     this.unauthenticated = new Agent()
-    this.authenticated = new Agent()
+    this.authenticated = new Agent(this.unauthenticated.credentials)
 
     await this.authenticated.login()
   })
@@ -38,12 +38,11 @@ describe('projects', () => {
             ],
           })
 
-        expect(res.statusCode).to.equal(302)
-        expect(res.headers.location).to.equal('/login')
+        expect(res.statusCode).to.equal(500)
+        expect(res.text).to.equal('Not authenticated')
       })
     })
     describe('success', () => {
-
       it('only title', async () => {
         const data = {
           title: faker.random.alphaNumeric(24),
@@ -165,8 +164,8 @@ describe('projects', () => {
         const res = await this.unauthenticated.agent
           .get('/projects')
 
-        expect(res.statusCode).to.equal(302)
-        expect(res.headers.location).to.equal('/login')
+        expect(res.statusCode).to.equal(500)
+        expect(res.text).to.equal('Not authenticated')
       })
     })
 
@@ -221,8 +220,8 @@ describe('projects', () => {
             title: faker.random.alphaNumeric(24)
           })
 
-        expect(res.statusCode).to.equal(302)
-        expect(res.headers.location).to.equal('/login')
+        expect(res.statusCode).to.equal(500)
+        expect(res.text).to.equal('Not authenticated')
       })
     })
 
@@ -291,8 +290,8 @@ describe('projects', () => {
         const res = await this.unauthenticated.agent
           .delete(`/projects/${body.id}`)
 
-        expect(res.statusCode).to.equal(302)
-        expect(res.headers.location).to.equal('/login')
+        expect(res.statusCode).to.equal(500)
+        expect(res.text).to.equal('Not authenticated')
       })
     })
 

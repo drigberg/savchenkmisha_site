@@ -15,8 +15,13 @@ class Admin {
       const credentials = this.createCredentials()
       console.log('Created default credentials. Change immediately!', credentials)
     }
+  }
 
-    this.schema = {}
+  getCredentials() {
+    return {
+      username: this.store.data.admin.username,
+      password: this.store.data.admin.hash,
+    }
   }
 
   getSecret() {
@@ -36,16 +41,20 @@ class Admin {
     this.update({
       username
     })
+
+    console.log('Updated username')
   }
 
   updatePassword(password) {
     const salt = this.createSalt()
-    const hash = this.generateHash(password, salt)
+    const hash = this.hashPassword(password, salt)
 
     this.update({
       hash,
       salt,
     })
+
+    console.log('Updated password')
   }
 
   checkCredentials(username, password) {

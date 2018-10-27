@@ -16,8 +16,6 @@ class Projects {
       this.store.data.projects = {}
       this.store.save()
     }
-
-    this.schema = {}
   }
 
   prepareData(data) {

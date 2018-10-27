@@ -13,13 +13,15 @@ const server = require('../server')
  */
 
 class Agent {
-  constructor() {
+  constructor(credentials) {
     this.agent = supertest.agent(server.server)
-    this.resetCredentials()
+    this.resetCredentials(credentials)
   }
 
-  resetCredentials() {
-    this.credentials = db.admin.createCredentials()
+  resetCredentials(credentials) {
+    this.credentials = credentials
+      ? credentials
+      : db.admin.createCredentials()
   }
 
   async login() {
