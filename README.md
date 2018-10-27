@@ -1,5 +1,8 @@
 # savchenkmisha_site
-personal website for a dear friend
+personal website for a dear friend, codename Doctor Bear.
+
+## Credentials
+Default credentials are generated at startup and logged by the server. They can be changed at any time through the UI or API, as detailed below.
 
 ## UI
 Login with admin credentials to manage projects.
@@ -7,6 +10,8 @@ Login with admin credentials to manage projects.
 Admin abilities:
 - update profile photo (to do)
 - update resume (to do)
+- change username
+- change password
 - create project
 - update project
 - disable project
@@ -24,6 +29,19 @@ Project structure:
   disabled: <boolean>
 }
 ```
+
+### POST /login
+- logs in user
+
+Request:
+```js
+{
+  username: <string>,
+  password: <string>
+}
+```
+
+Redirects to '/' on success, or '/login' on failure.
 
 ### GET /projects
 - lists all projects

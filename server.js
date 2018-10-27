@@ -9,7 +9,6 @@ const PORT = process.env.PORT || 5000
 const db = require('./db')
 const passport = require('passport')
 const LocalStrategy = require('passport-local')
-const env = require('./env')
 
 /**
  * Server
@@ -26,7 +25,7 @@ app.use(bodyParser.json())
 app.use(express.static('public'))
 
 app.use(expressSession({
-  secret: env.session.secret,
+  secret: db.admin.getSecret(),
   resave: false,
   saveUninitialized: false
 }))

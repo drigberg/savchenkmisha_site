@@ -11,12 +11,16 @@ const crypto = require('crypto')
 class Admin {
   constructor(store) {
     this.store = store
-    if (!this.store.data.admin) {
+    if (!this.store.data || !this.store.data.admin) {
       const credentials = this.createCredentials()
       console.log('Created default credentials. Change immediately!', credentials)
     }
 
     this.schema = {}
+  }
+
+  getSecret() {
+    return this.store.data.admin.sessionSecret
   }
 
   update(data) {
@@ -69,11 +73,13 @@ class Admin {
     const password = crypto.randomBytes(6).toString('hex')
     const salt = this.createSalt()
     const hash = this.hashPassword(password, salt)
+    const sessionSecret = crypto.randomBytes(32).toString('hex')
 
     this.update({
       username,
       hash,
-      salt
+      salt,
+      sessionSecret,
     })
 
     return {
@@ -93,6 +99,13 @@ class Admin {
       .digest('hex')
 
     return hash
+  }
+
+  flush() {
+    this.store.data.admin = {}
+    this.store.save()
+
+    return this.store.data.projects
   }
 }
 

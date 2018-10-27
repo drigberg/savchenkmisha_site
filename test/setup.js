@@ -9,11 +9,18 @@ const {
   after,
 } = require('mocha')
 
+const db = require('../db')
 const server = require('../server')
 
 /**
  * Module
  */
 
-before(() => server.start())
-after(() => server.stop())
+before(async () => {
+  db.flush()
+  await server.start()
+})
+after(async () => {
+  await server.stop()
+  db.flush()
+})

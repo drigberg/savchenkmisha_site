@@ -19,11 +19,17 @@ if (process.env.NODE_ENV === 'test') {
 
 const store = new Store(path.join(__dirname, storePath))
 
+function flush() {
+  store.data = {}
+  store.save()
+}
+
 /**
  * Module exports
  */
 
 module.exports = {
   admin: new Admin(store),
+  flush,
   projects: new Projects(store),
 }
