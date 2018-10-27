@@ -16,103 +16,125 @@ const Agent = require('./Agent')
 describe('projects', () => {
   before(async () => {
     db.projects.removeAll()
-    this.agent = new Agent()
-    await this.agent.login()
+    this.unauthenticated = new Agent()
+    this.authenticated = new Agent()
+
+    await this.authenticated.login()
   })
 
   after(() => db.projects.removeAll())
 
   describe('insert', () => {
-    it('only title', async () => {
-      const data = {
-        title: faker.random.alphaNumeric(24),
-      }
+    describe('failure', () => {
+      it('unauthenticated', async () => {
+        const res = await this.unauthenticated.agent
+          .post('/projects')
+          .send({
+            title: faker.random.alphaNumeric(24),
+            description: faker.lorem.paragraph(12),
+            images: [
+              faker.internet.url(),
+              faker.internet.url(),
+            ],
+          })
 
-      const { body } = await this.agent.agent
-        .post('/projects')
-        .send(data)
-
-      expect(body).to.be.an('object')
-      expect(body).to.have.property('id').and.be.a('string')
-      expect(body).to.have.property('images').and.deep.equal([])
-
-      const {
-        id,
-        images,
-        ...actual
-      } = body
-
-      expect(actual).to.deep.equal(data)
+        expect(res.statusCode).to.equal(302)
+        expect(res.headers.location).to.equal('/login')
+      })
     })
+    describe('success', () => {
 
-    it('only description', async () => {
-      const data = {
-        description: faker.lorem.paragraph(12),
-      }
+      it('only title', async () => {
+        const data = {
+          title: faker.random.alphaNumeric(24),
+        }
 
-      const { body } = await this.agent.agent
-        .post('/projects')
-        .send(data)
+        const { body } = await this.authenticated.agent
+          .post('/projects')
+          .send(data)
 
-      expect(body).to.be.an('object')
-      expect(body).to.have.property('id').and.be.a('string')
-      expect(body).to.have.property('images').and.deep.equal([])
+        expect(body).to.be.an('object')
+        expect(body).to.have.property('id').and.be.a('string')
+        expect(body).to.have.property('images').and.deep.equal([])
 
-      const {
-        id,
-        images,
-        ...actual
-      } = body
+        const {
+          id,
+          images,
+          ...actual
+        } = body
 
-      expect(actual).to.deep.equal(data)
-    })
+        expect(actual).to.deep.equal(data)
+      })
 
-    it('only images', async () => {
-      const data = {
-        images: [
-          faker.internet.url(),
-          faker.internet.url(),
-        ],
-      }
+      it('only description', async () => {
+        const data = {
+          description: faker.lorem.paragraph(12),
+        }
 
-      const { body } = await this.agent.agent
-        .post('/projects')
-        .send(data)
+        const { body } = await this.authenticated.agent
+          .post('/projects')
+          .send(data)
 
-      expect(body).to.be.an('object')
-      expect(body).to.have.property('id').and.be.a('string')
+        expect(body).to.be.an('object')
+        expect(body).to.have.property('id').and.be.a('string')
+        expect(body).to.have.property('images').and.deep.equal([])
 
-      const {
-        id,
-        ...actual
-      } = body
+        const {
+          id,
+          images,
+          ...actual
+        } = body
 
-      expect(actual).to.deep.equal(data)
-    })
+        expect(actual).to.deep.equal(data)
+      })
 
-    it('all properties provided', async () => {
-      const data = {
-        title: faker.random.alphaNumeric(24),
-        description: faker.lorem.paragraph(12),
-        images: [
-          faker.internet.url(),
-          faker.internet.url(),
-        ],
-      }
+      it('only images', async () => {
+        const data = {
+          images: [
+            faker.internet.url(),
+            faker.internet.url(),
+          ],
+        }
 
-      const { body } = await this.agent.agent
-        .post('/projects')
-        .send(data)
+        const { body } = await this.authenticated.agent
+          .post('/projects')
+          .send(data)
 
-      expect(body).to.be.an('object')
-      expect(body).to.have.property('id').and.be.a('string')
+        expect(body).to.be.an('object')
+        expect(body).to.have.property('id').and.be.a('string')
 
-      const {
-        id,
-        ...actual
-      } = body
+        const {
+          id,
+          ...actual
+        } = body
 
-      expect(actual).to.deep.equal(data)
+        expect(actual).to.deep.equal(data)
+      })
+
+      it('all properties provided', async () => {
+        const data = {
+          title: faker.random.alphaNumeric(24),
+          description: faker.lorem.paragraph(12),
+          images: [
+            faker.internet.url(),
+            faker.internet.url(),
+          ],
+        }
+
+        const { body } = await this.authenticated.agent
+          .post('/projects')
+          .send(data)
+
+        expect(body).to.be.an('object')
+        expect(body).to.have.property('id').and.be.a('string')
+
+        const {
+          id,
+          ...actual
+        } = body
+
+        expect(actual).to.deep.equal(data)
+      })
     })
   })
 
@@ -123,7 +145,7 @@ describe('projects', () => {
       this.projects = []
 
       for (let i = 0; i < 5; i++) {
-        const { body } = await this.agent.agent
+        const { body } = await this.authenticated.agent
           .post('/projects')
           .send({
             title: faker.random.alphaNumeric(24),
@@ -138,11 +160,23 @@ describe('projects', () => {
       }
     })
 
-    it('lists all', async () => {
-      const { body } = await this.agent.agent
-        .get('/projects')
+    describe('failure', () => {
+      it('unauthenticated', async () => {
+        const res = await this.unauthenticated.agent
+          .get('/projects')
 
-      expect(body.sort()).to.deep.equal(this.projects.sort())
+        expect(res.statusCode).to.equal(302)
+        expect(res.headers.location).to.equal('/login')
+      })
+    })
+
+    describe('success', () => {
+      it('lists all', async () => {
+        const { body } = await this.authenticated.agent
+          .get('/projects')
+
+        expect(body.sort()).to.deep.equal(this.projects.sort())
+      })
     })
   })
 
@@ -153,7 +187,7 @@ describe('projects', () => {
       this.projects = []
 
       for (let i = 0; i < 5; i++) {
-        const { body } = await this.agent.agent
+        const { body } = await this.authenticated.agent
           .post('/projects')
           .send({
             title: faker.random.alphaNumeric(24),
@@ -168,28 +202,54 @@ describe('projects', () => {
       }
     })
 
-    it('title', async () => {
-      const data = {
-        title: faker.random.alphaNumeric(24)
-      }
+    describe('failure', () => {
+      it('update', async () => {
+        const { body } = await this.authenticated.agent
+          .post('/projects')
+          .send({
+            title: faker.random.alphaNumeric(24),
+            description: faker.lorem.paragraph(12),
+            images: [
+              faker.internet.url(),
+              faker.internet.url(),
+            ],
+          })
 
-      const { body: updated } = await this.agent.agent
-        .post(`/projects/${this.projects[0].id}`)
-        .send(data)
+        const res = await this.unauthenticated.agent
+          .post(`/projects/${body.id}`)
+          .send({
+            title: faker.random.alphaNumeric(24)
+          })
+
+        expect(res.statusCode).to.equal(302)
+        expect(res.headers.location).to.equal('/login')
+      })
+    })
+
+    describe('success', () => {
+      it('title', async () => {
+        const data = {
+          title: faker.random.alphaNumeric(24)
+        }
+
+        const { body: updated } = await this.authenticated.agent
+          .post(`/projects/${this.projects[0].id}`)
+          .send(data)
 
 
-      const expected = {
-        ...this.projects[0],
-        ...data
-      }
+        const expected = {
+          ...this.projects[0],
+          ...data
+        }
 
-      expect(updated).to.deep.equal(expected)
+        expect(updated).to.deep.equal(expected)
 
-      const { body: listed } = await this.agent.agent
-        .get('/projects')
+        const { body: listed } = await this.authenticated.agent
+          .get('/projects')
 
-      const actual = listed.find(item => item.id === this.projects[0].id)
-      expect(actual).to.deep.equal(expected)
+        const actual = listed.find(item => item.id === this.projects[0].id)
+        expect(actual).to.deep.equal(expected)
+      })
     })
   })
 
@@ -200,7 +260,7 @@ describe('projects', () => {
       this.projects = []
 
       for (let i = 0; i < 5; i++) {
-        const { body } = await this.agent.agent
+        const { body } = await this.authenticated.agent
           .post('/projects')
           .send({
             title: faker.random.alphaNumeric(24),
@@ -215,15 +275,38 @@ describe('projects', () => {
       }
     })
 
-    it('success', async () => {
-      await this.agent.agent
-        .delete(`/projects/${this.projects[0].id}`)
+    describe('failure', () => {
+      it('unauthenticated', async () => {
+        const { body } = await this.authenticated.agent
+          .post('/projects')
+          .send({
+            title: faker.random.alphaNumeric(24),
+            description: faker.lorem.paragraph(12),
+            images: [
+              faker.internet.url(),
+              faker.internet.url(),
+            ],
+          })
 
-      const { body: listed } = await this.agent.agent
-        .get('/projects')
+        const res = await this.unauthenticated.agent
+          .delete(`/projects/${body.id}`)
 
-      const actual = listed.find(item => item.id === this.projects[0].id)
-      expect(actual).to.equal(undefined)
+        expect(res.statusCode).to.equal(302)
+        expect(res.headers.location).to.equal('/login')
+      })
+    })
+
+    describe('success', () => {
+      it('removes project by id', async () => {
+        await this.authenticated.agent
+          .delete(`/projects/${this.projects[0].id}`)
+
+        const { body: listed } = await this.authenticated.agent
+          .get('/projects')
+
+        const actual = listed.find(item => item.id === this.projects[0].id)
+        expect(actual).to.equal(undefined)
+      })
     })
   })
 })

@@ -6,9 +6,12 @@ const express = require('express')
 const expressSession = require('express-session')
 const bodyParser = require('body-parser')
 const PORT = process.env.PORT || 5000
-const db = require('./db')
 const passport = require('passport')
 const LocalStrategy = require('passport-local')
+const db = require('./db')
+const {
+  authenticate,
+} = require('./middleware')
 
 /**
  * Server
@@ -73,26 +76,26 @@ app.post('/login', passport.authenticate('local', {
   failureRedirect: '/login',
 }))
 
-app.get('/projects', function(req, res){
+app.get('/projects', authenticate, function(req, res){
   const projects = db.projects.list()
   res.json(projects)
 })
 
-app.post('/projects', function(req, res){
+app.post('/projects', authenticate, function(req, res){
   const project = db.projects.insert(req.body)
   console.log('Inserted project', project)
 
   res.json(project)
 })
 
-app.post('/projects/:id', function(req, res){
+app.post('/projects/:id', authenticate, function(req, res){
   const project = db.projects.update(req.params.id, req.body)
   console.log('Updated project', project)
 
   res.json(project)
 })
 
-app.delete('/projects/:id', function(req, res){
+app.delete('/projects/:id', authenticate, function(req, res){
   db.projects.remove(req.params.id)
   console.log(`Removed project ${req.params.id}`)
 
