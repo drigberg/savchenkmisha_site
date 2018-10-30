@@ -76,6 +76,14 @@ app.post('/login', passport.authenticate('local', {
   failureRedirect: '/login',
 }))
 
+app.get('/logout', function (req, res, next) {
+  if (req.logout) {
+    req.logout()
+  }
+
+  res.redirect('/')
+})
+
 app.post('/change_password', authenticate, function(req, res) {
   if (!db.admin.checkPassword(req.body.current_password)) {
     res.status(500).send('incorrect password')

@@ -68,6 +68,33 @@ describe('admin', () => {
     })
   })
 
+  describe('logout', () => {
+    it('logged in', async () => {
+      const agent = new Agent()
+      await agent.agent
+        .post('/login')
+        .send(agent.credentials)
+
+      const res = await agent.agent
+        .get('/logout')
+
+      expect(res.statusCode).to.equal(302)
+      expect(res.headers).to.not.have.property('set-cookie')
+      expect(res.headers.location).to.equal('/')
+    })
+
+    it('already logged out', async () => {
+      const agent = new Agent()
+
+      const res = await agent.agent
+        .get('/logout')
+
+      expect(res.statusCode).to.equal(302)
+      expect(res.headers).to.not.have.property('set-cookie')
+      expect(res.headers.location).to.equal('/')
+    })
+  })
+
   describe('change password', () => {
     describe('success', () => {
       it('current password matches', async () => {
