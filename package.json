@@ -4,9 +4,10 @@
   "description": "personal website for a dear friend",
   "main": "index.js",
   "scripts": {
-    "start": "NODE_ENV=production node start.js",
-    "test": "NODE_ENV=test mocha test/setup.js test/*.test.js",
-    "seed-db": "node db/seed"
+    "start": "NODE_ENV=production node api/start.js",
+    "test": "npm run test-api",
+    "test-api": "NODE_ENV=test mocha api/test/setup.js api/test/*.test.js",
+    "seed-db": "node api/db/seed"
   },
   "repository": {
     "type": "git",
