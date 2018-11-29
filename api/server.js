@@ -106,6 +106,16 @@ app.post('/api/change_username', authenticate, function(req, res) {
   res.redirect('/')
 })
 
+app.get('/api/about', function(req, res){
+  const about = db.about.read()
+  res.json(about)
+})
+
+app.get('/api/contact', function(req, res){
+  const contact = db.contact.read()
+  res.json(contact)
+})
+
 app.get('/api/projects', function(req, res){
   const projects = db.projects.list()
   res.json(projects)

@@ -5,10 +5,12 @@
   "main": "index.js",
   "scripts": {
     "start": "npm-run-all --parallel api:start ui:start",
+    "start:dev": "npm-run-all --parallel api:start:dev ui:start",
     "test": "npm run api:test",
     "build": "npm run --prefix ui build",
     "postinstall": "cd ui && npm install",
     "api:start": "NODE_ENV=production node api/start.js",
+    "api:start:dev": "NODE_ENV=production nodemon api/start.js",
     "api:test": "NODE_ENV=test mocha api/test/setup.js api/test/*.test.js",
     "ui:start": "npm run --prefix ui start",
     "seed-db": "node api/db/seed"
@@ -27,14 +29,16 @@
     "body-parser": "1.18.3",
     "express": "4.16.4",
     "express-session": "1.15.6",
-    "npm-run-all": "4.1.3",
+    "npm-run-all": "4.1.5",
     "passport": "0.4.0",
-    "passport-local": "1.0.0"
+    "passport-local": "1.0.0",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "chai": "4.2.0",
     "faker": "4.1.0",
     "mocha": "5.2.0",
+    "nodemon": "1.18.7",
     "request-promise": "4.2.2",
     "supertest": "3.3.0"
   }
