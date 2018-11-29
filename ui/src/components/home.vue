@@ -80,8 +80,6 @@ Vue.component("contact", {
         <strong>linkedin:</strong>
         {{ data.linkedin }}
       </p>
-
-      <router-link to="/">Home</router-link>
     </div>`
 });
 

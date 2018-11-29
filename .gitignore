@@ -1,6 +1,6 @@
 # api
-db/db.json
-db/db.test.json
+api/db/db.json
+api/db/db.test.json
 
 # ui
 

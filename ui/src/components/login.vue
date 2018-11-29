@@ -1,14 +1,14 @@
 <!-- Template -->
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
-    <router-link to="/">
-      <div class="image">
-        <div class="overlay"></div>
-        <img src="../assets/about.jpg">
-        <h2>Back to home</h2>
-      </div>
-    </router-link>
+    <h1>Login</h1>
+    <form action="/api/login" method="post">
+      <input name="username" type="text">
+      <label for="username">Username</label>
+      <input name="password" type="text">
+      <label for="password">Password</label>
+      <input type="submit" value="login">
+    </form>
   </div>
 </template>
 
@@ -18,12 +18,7 @@
 import Vue from "vue";
 
 export default {
-  name: "Login",
-  data() {
-    return {
-      msg: "Login page goes here"
-    };
-  }
+  name: "Login"
 };
 </script>
 

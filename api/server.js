@@ -37,7 +37,7 @@ app.use(expressSession({
 app.use(passport.initialize())
 app.use(passport.session())
 
-passport.use(new LocalStrategy(function(username, password, done) {
+passport.use(new LocalStrategy(function (username, password, done) {
   if (!db.admin.checkCredentials(username, password)) {
     return done()
   }
@@ -47,11 +47,11 @@ passport.use(new LocalStrategy(function(username, password, done) {
   })
 }))
 
-passport.serializeUser(function(user, done) {
+passport.serializeUser(function (user, done) {
   done(null, 'admin')
 })
 
-passport.deserializeUser(function(id, done) {
+passport.deserializeUser(function (id, done) {
   done(null, {
     admin: true
   })
@@ -61,11 +61,11 @@ passport.deserializeUser(function(id, done) {
  * Routes
  */
 
-app.get('/', function(req, res){
+app.get('/', function (req, res) {
   res.render('index')
 })
 
-app.get('/login', function(req, res) {
+app.get('/login', function (req, res) {
   res.render('login')
 })
 
@@ -82,7 +82,7 @@ app.get('/api/logout', function (req, res) {
   res.redirect('/')
 })
 
-app.post('/api/change_password', authenticate, function(req, res) {
+app.post('/api/change_password', authenticate, function (req, res) {
   if (!db.admin.checkPassword(req.body.current_password)) {
     res.status(500).send('incorrect password')
     return
@@ -94,7 +94,7 @@ app.post('/api/change_password', authenticate, function(req, res) {
   res.redirect('/')
 })
 
-app.post('/api/change_username', authenticate, function(req, res) {
+app.post('/api/change_username', authenticate, function (req, res) {
   if (!db.admin.checkPassword(req.body.password)) {
     res.status(500).send('incorrect password')
     return
@@ -106,36 +106,36 @@ app.post('/api/change_username', authenticate, function(req, res) {
   res.redirect('/')
 })
 
-app.get('/api/about', function(req, res){
+app.get('/api/about', function (req, res) {
   const about = db.about.read()
   res.json(about)
 })
 
-app.get('/api/contact', function(req, res){
+app.get('/api/contact', function (req, res) {
   const contact = db.contact.read()
   res.json(contact)
 })
 
-app.get('/api/projects', function(req, res){
+app.get('/api/projects', function (req, res) {
   const projects = db.projects.list()
   res.json(projects)
 })
 
-app.post('/api/projects', authenticate, function(req, res){
+app.post('/api/projects', authenticate, function (req, res) {
   const project = db.projects.insert(req.body)
   console.log('Inserted project', project)
 
   res.json(project)
 })
 
-app.post('/api/projects/:id', authenticate, function(req, res){
+app.post('/api/projects/:id', authenticate, function (req, res) {
   const project = db.projects.update(req.params.id, req.body)
   console.log('Updated project', project)
 
   res.json(project)
 })
 
-app.delete('/api/projects/:id', authenticate, function(req, res){
+app.delete('/api/projects/:id', authenticate, function (req, res) {
   db.projects.remove(req.params.id)
   console.log(`Removed project ${req.params.id}`)
 
@@ -150,7 +150,7 @@ class Server {
   start() {
     const that = this
     return new Promise(function (resolve, reject) {
-      that.server = app.listen(PORT, function(err){
+      that.server = app.listen(PORT, function (err) {
         if (err) {
           reject(err)
         } else {
