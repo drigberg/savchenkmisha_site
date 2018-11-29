@@ -1,9 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import home from '@/components/home'
-import projects from '@/components/projects'
-import about from '@/components/about'
-import contact from '@/components/contact'
+import login from '@/components/login'
 
 Vue.use(Router)
 
@@ -15,19 +13,9 @@ export default new Router({
       component: home
     },
     {
-      path: '/projects',
-      name: 'projects',
-      component: projects
+      path: '/login',
+      name: 'login',
+      component: login
     },
-    {
-      path: '/about',
-      name: 'about',
-      component: about
-    },
-    {
-      path: '/contact',
-      name: 'contact',
-      component: contact
-    }
   ]
 })

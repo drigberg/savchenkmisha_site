@@ -12,9 +12,9 @@ db.projects.removeAll();
 
 db.projects.insert({
   title: 'robocop',
-  description: 'I made robocop',
+  description: 'Bears are on every continent mostly',
   images: [
-    'http://ildiariosegretodicupido.altervista.org/wp-content/uploads/2014/06/robocop-6.jpg',
+    'https://media.giphy.com/media/IThjAlJnD9WNO/giphy.gif',
     'http://static1.squarespace.com/static/51b3dc8ee4b051b96ceb10de/t/51f184cbe4b09c11b2b67af2/1374782671284/tumblr_mqhzsce6Gb1qbc7d1o1_1280.jpg'
   ]
 });

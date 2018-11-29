@@ -1,30 +1,11 @@
 <!-- Template -->
-
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
+    <h1>{{ title }}</h1>
+    <h3>{{ subtitle }}</h3>
     <div class="container">
-      <router-link to="/about">
-        <div class="image">
-          <div class="overlay"></div>
-          <img src="../assets/about.jpg" />
-          <h2>About</h2>
-        </div>
-      </router-link>
-      <router-link to="/projects">
-        <div class="image">
-          <div class="overlay"></div>
-          <img src="../assets/projects.jpg" />
-          <h2>Projects</h2>
-        </div>
-      </router-link>
-      <router-link to="/contact">
-        <div class="image">
-          <div class="overlay"></div>
-          <img src="../assets/contact.jpg" />
-          <h2>Contact</h2>
-        </div>
-      </router-link>
+      <projects></projects>
+      <contact></contact>
     </div>
   </div>
 </template>
@@ -32,49 +13,153 @@
 <!-- Script -->
 
 <script>
-export default {
-  name: 'Home',
-  data () {
+import Vue from "vue";
+
+Vue.component("projects", {
+  name: "Projects",
+  data() {
     return {
-      msg: 'Misha Savchenko'
-    }
+      data: []
+    };
+  },
+  created() {
+    const vm = this;
+
+    fetch("/api/projects")
+      .then(response => response.json())
+      .then(function(data) {
+        vm.data = data;
+      });
+  },
+  template: `
+    <div>
+      <div class="grid">
+        <div
+          class="preview main-project"
+          v-if=data.length
+          v-bind:style="{ background: 'url(' + data[0].images[0] + ')', backgroundSize: 'cover', backgroundPosition: 'center'}"></div>
+        <div
+          class="preview minor-project-1"
+          v-if=data.length
+          v-bind:style="{ background: 'url(' + data[1].images[0] + ')', backgroundSize: 'cover', backgroundPosition: 'center'}"></div>
+        <div
+          class="preview minor-project-2"
+          v-if=data.length
+          v-bind:style="{ background: 'url(' + data[2].images[0] + ')', backgroundSize: 'cover', backgroundPosition: 'center'}"></div>
+      </div>
+    </div>`
+});
+
+Vue.component("contact", {
+  name: "Contact",
+  data() {
+    return {
+      data: {}
+    };
+  },
+  created() {
+    const vm = this;
+
+    fetch("/api/contact")
+      .then(response => response.json())
+      .then(function(data) {
+        vm.data = data;
+      });
+  },
+  template: `
+    <div class="hello">
+      <p>
+        <strong>email:</strong>
+        {{ data.email }}
+      </p>
+      <p>
+        <strong>github:</strong>
+        {{ data.github }}
+      </p>
+      <p>
+        <strong>linkedin:</strong>
+        {{ data.linkedin }}
+      </p>
+
+      <router-link to="/">Home</router-link>
+    </div>`
+});
+
+export default {
+  name: "Home",
+  data() {
+    return {
+      title: "MISHA SAVCHENKO",
+      subtitle: "Engineer, Grizzly Bear, Proud Father"
+    };
   }
-}
+};
 </script>
 
 <!-- Style -->
-<style scoped>
-.container {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
+<style>
+.grid {
+  height: 500px;
+  grid-template-columns: 7fr 3fr;
+  grid-template-rows: 6fr 4fr;
+  display: grid;
+  justify-items: stretch;
+  align-items: stretch;
 }
 
-.image {
-  margin: 10px;
-  position: relative;
-  width: 200px;
+.main-project {
+  grid-column-start: 1;
+  grid-column-end: 1;
+  grid-row-start: 1;
+  grid-row-end: last-line;
+}
+
+.minor-project-1 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  grid-column-start: 2;
+  grid-column-end: last-line;
+  grid-row-start: 1;
+  grid-row-end: 2;
+}
+
+.minor-project-2 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  grid-column-start: 2;
+  grid-column-end: last-line;
+  grid-row-start: 2;
+  grid-row-end: last-line;
 }
 
 img {
-  border: 5px solid #cdcdcd;
+  flex-shrink: 0;
+  min-width: 100%;
+  max-height: 100%;
+  object-fit: fill;
 }
 
-h2 {
+.container {
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 0px auto;
+}
+i h2 {
   top: 60px;
   left: 0;
-  position:absolute;
-  text-align:center;
+  position: absolute;
+  text-align: center;
   width: 100%;
   color: white;
 }
 
-.image:hover > .overlay {
-  width: 210px;
-  height: 210px;
-  position: absolute;
-  background-color: #000;
-  opacity: 0.5;
+.circle:hover {
+  opacity: 1;
 }
 </style>
