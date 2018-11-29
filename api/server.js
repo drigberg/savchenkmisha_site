@@ -5,28 +5,29 @@
 const express = require('express')
 const expressSession = require('express-session')
 const bodyParser = require('body-parser')
-const PORT = process.env.PORT || 5000
+const path = require('path')
 const passport = require('passport')
 const LocalStrategy = require('passport-local')
 const db = require('./db')
+
 const {
   authenticate,
 } = require('./middleware')
 
 /**
- * Server
+ * Module variables
  */
 
 const app = express()
+const PORT = process.env.PORT || 5000
 
 /**
  * Middleware
  */
 
+app.use(express.static(path.join(__dirname, '..', '/ui/dist')))
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
-app.use(express.static('public'))
-
 app.use(expressSession({
   secret: db.admin.getSecret(),
   resave: false,
@@ -56,9 +57,6 @@ passport.deserializeUser(function(id, done) {
   })
 })
 
-app.set('views', './views')
-app.set('view engine', 'pug')
-
 /**
  * Routes
  */
@@ -67,16 +65,16 @@ app.get('/', function(req, res){
   res.render('index')
 })
 
-app.get('login', function(req, res) {
+app.get('/login', function(req, res) {
   res.render('login')
 })
 
-app.post('/login', passport.authenticate('local', {
+app.post('/api/login', passport.authenticate('local', {
   successRedirect: '/',
   failureRedirect: '/login',
 }))
 
-app.get('/logout', function (req, res) {
+app.get('/api/logout', function (req, res) {
   if (req.logout) {
     req.logout()
   }
@@ -84,12 +82,11 @@ app.get('/logout', function (req, res) {
   res.redirect('/')
 })
 
-app.post('/change_password', authenticate, function(req, res) {
+app.post('/api/change_password', authenticate, function(req, res) {
   if (!db.admin.checkPassword(req.body.current_password)) {
     res.status(500).send('incorrect password')
     return
   }
-
 
   db.admin.updatePassword(req.body.new_password)
 
@@ -97,7 +94,7 @@ app.post('/change_password', authenticate, function(req, res) {
   res.redirect('/')
 })
 
-app.post('/change_username', authenticate, function(req, res) {
+app.post('/api/change_username', authenticate, function(req, res) {
   if (!db.admin.checkPassword(req.body.password)) {
     res.status(500).send('incorrect password')
     return
@@ -109,30 +106,34 @@ app.post('/change_username', authenticate, function(req, res) {
   res.redirect('/')
 })
 
-app.get('/projects', authenticate, function(req, res){
+app.get('/api/projects', function(req, res){
   const projects = db.projects.list()
   res.json(projects)
 })
 
-app.post('/projects', authenticate, function(req, res){
+app.post('/api/projects', authenticate, function(req, res){
   const project = db.projects.insert(req.body)
   console.log('Inserted project', project)
 
   res.json(project)
 })
 
-app.post('/projects/:id', authenticate, function(req, res){
+app.post('/api/projects/:id', authenticate, function(req, res){
   const project = db.projects.update(req.params.id, req.body)
   console.log('Updated project', project)
 
   res.json(project)
 })
 
-app.delete('/projects/:id', authenticate, function(req, res){
+app.delete('/api/projects/:id', authenticate, function(req, res){
   db.projects.remove(req.params.id)
   console.log(`Removed project ${req.params.id}`)
 
   res.json({ ok: 'ok' })
+})
+
+app.get('*', (req, res) => {
+  res.redirect('/')
 })
 
 class Server {

@@ -26,7 +26,7 @@ class Agent {
 
   async login() {
     const res = await this.agent
-      .post('/login')
+      .post('/api/login')
       .send(this.credentials)
 
     expect(res.statusCode).to.equal(302)

@@ -28,7 +28,7 @@ describe('projects', () => {
     describe('failure', () => {
       it('unauthenticated', async () => {
         const res = await this.unauthenticated.agent
-          .post('/projects')
+          .post('/api/projects')
           .send({
             title: faker.random.alphaNumeric(24),
             description: faker.lorem.paragraph(12),
@@ -49,7 +49,7 @@ describe('projects', () => {
         }
 
         const { body } = await this.authenticated.agent
-          .post('/projects')
+          .post('/api/projects')
           .send(data)
 
         expect(body).to.be.an('object')
@@ -71,7 +71,7 @@ describe('projects', () => {
         }
 
         const { body } = await this.authenticated.agent
-          .post('/projects')
+          .post('/api/projects')
           .send(data)
 
         expect(body).to.be.an('object')
@@ -96,7 +96,7 @@ describe('projects', () => {
         }
 
         const { body } = await this.authenticated.agent
-          .post('/projects')
+          .post('/api/projects')
           .send(data)
 
         expect(body).to.be.an('object')
@@ -121,7 +121,7 @@ describe('projects', () => {
         }
 
         const { body } = await this.authenticated.agent
-          .post('/projects')
+          .post('/api/projects')
           .send(data)
 
         expect(body).to.be.an('object')
@@ -145,7 +145,7 @@ describe('projects', () => {
 
       for (let i = 0; i < 5; i++) {
         const { body } = await this.authenticated.agent
-          .post('/projects')
+          .post('/api/projects')
           .send({
             title: faker.random.alphaNumeric(24),
             description: faker.lorem.paragraph(12),
@@ -159,20 +159,17 @@ describe('projects', () => {
       }
     })
 
-    describe('failure', () => {
-      it('unauthenticated', async () => {
-        const res = await this.unauthenticated.agent
-          .get('/projects')
-
-        expect(res.statusCode).to.equal(500)
-        expect(res.text).to.equal('Not authenticated')
-      })
-    })
-
     describe('success', () => {
-      it('lists all', async () => {
+      it('unauthenticated', async () => {
+        const { body } = await this.unauthenticated.agent
+          .get('/api/projects')
+
+        expect(body.sort()).to.deep.equal(this.projects.sort())
+      })
+
+      it('authenticated', async () => {
         const { body } = await this.authenticated.agent
-          .get('/projects')
+          .get('/api/projects')
 
         expect(body.sort()).to.deep.equal(this.projects.sort())
       })
@@ -187,7 +184,7 @@ describe('projects', () => {
 
       for (let i = 0; i < 5; i++) {
         const { body } = await this.authenticated.agent
-          .post('/projects')
+          .post('/api/projects')
           .send({
             title: faker.random.alphaNumeric(24),
             description: faker.lorem.paragraph(12),
@@ -204,7 +201,7 @@ describe('projects', () => {
     describe('failure', () => {
       it('update', async () => {
         const { body } = await this.authenticated.agent
-          .post('/projects')
+          .post('/api/projects')
           .send({
             title: faker.random.alphaNumeric(24),
             description: faker.lorem.paragraph(12),
@@ -215,7 +212,7 @@ describe('projects', () => {
           })
 
         const res = await this.unauthenticated.agent
-          .post(`/projects/${body.id}`)
+          .post(`/api/projects/${body.id}`)
           .send({
             title: faker.random.alphaNumeric(24)
           })
@@ -232,7 +229,7 @@ describe('projects', () => {
         }
 
         const { body: updated } = await this.authenticated.agent
-          .post(`/projects/${this.projects[0].id}`)
+          .post(`/api/projects/${this.projects[0].id}`)
           .send(data)
 
 
@@ -244,7 +241,7 @@ describe('projects', () => {
         expect(updated).to.deep.equal(expected)
 
         const { body: listed } = await this.authenticated.agent
-          .get('/projects')
+          .get('/api/projects')
 
         const actual = listed.find(item => item.id === this.projects[0].id)
         expect(actual).to.deep.equal(expected)
@@ -260,7 +257,7 @@ describe('projects', () => {
 
       for (let i = 0; i < 5; i++) {
         const { body } = await this.authenticated.agent
-          .post('/projects')
+          .post('/api/projects')
           .send({
             title: faker.random.alphaNumeric(24),
             description: faker.lorem.paragraph(12),
@@ -277,7 +274,7 @@ describe('projects', () => {
     describe('failure', () => {
       it('unauthenticated', async () => {
         const { body } = await this.authenticated.agent
-          .post('/projects')
+          .post('/api/projects')
           .send({
             title: faker.random.alphaNumeric(24),
             description: faker.lorem.paragraph(12),
@@ -288,7 +285,7 @@ describe('projects', () => {
           })
 
         const res = await this.unauthenticated.agent
-          .delete(`/projects/${body.id}`)
+          .delete(`/api/projects/${body.id}`)
 
         expect(res.statusCode).to.equal(500)
         expect(res.text).to.equal('Not authenticated')
@@ -298,10 +295,10 @@ describe('projects', () => {
     describe('success', () => {
       it('removes project by id', async () => {
         await this.authenticated.agent
-          .delete(`/projects/${this.projects[0].id}`)
+          .delete(`/api/projects/${this.projects[0].id}`)
 
         const { body: listed } = await this.authenticated.agent
-          .get('/projects')
+          .get('/api/projects')
 
         const actual = listed.find(item => item.id === this.projects[0].id)
         expect(actual).to.equal(undefined)

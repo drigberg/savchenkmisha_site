@@ -1,1 +1,28 @@
-{"admin":{"username":"5d4f5f44df76","hash":"aeca200b734afb417f6710f0c141cca99f490c3b","salt":"4666cc13f8c4"},"projects":{}}
+{
+  "admin": {
+    "username": "e5583c7dbd1b",
+    "hash": "7f1e4de2e579bb47134f8289eb76fb997c4ea2cf",
+    "salt": "6948279d522c",
+    "sessionSecret": "82e233301f16595bf969e032becac9ef88fc998d3d68876f61cdcafc06a6fdc8"
+  },
+  "projects": {
+    "b3769710-dc53-11e8-ba97-e7f1b5e901ed": {
+      "id": "b3769710-dc53-11e8-ba97-e7f1b5e901ed",
+      "title": "robocop",
+      "description": "I made robocop",
+      "images": [
+        "http://ildiariosegretodicupido.altervista.org/wp-content/uploads/2014/06/robocop-6.jpg",
+        "http://static1.squarespace.com/static/51b3dc8ee4b051b96ceb10de/t/51f184cbe4b09c11b2b67af2/1374782671284/tumblr_mqhzsce6Gb1qbc7d1o1_1280.jpg"
+      ]
+    },
+    "b3770c40-dc53-11e8-ba97-e7f1b5e901ed": {
+      "id": "b3770c40-dc53-11e8-ba97-e7f1b5e901ed",
+      "title": "megatron",
+      "description": "I made megatron",
+      "images": [
+        "http://images1.wikia.nocookie.net/__cb20110727191817/villains/images/0/01/Megatron_TRotF.jpg",
+        "http://vignette1.wikia.nocookie.net/robotsupremacy/images/f/f8/Megatron_bay.png/revision/latest?cb=20140405141216"
+      ]
+    }
+  }
+}

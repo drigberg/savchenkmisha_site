@@ -17,7 +17,7 @@ describe('admin', () => {
     it('correct credentials', async () => {
       const agent = new Agent()
       const res = await agent.agent
-        .post('/login')
+        .post('/api/login')
         .send(agent.credentials)
 
       expect(res.statusCode).to.equal(302)
@@ -28,7 +28,7 @@ describe('admin', () => {
     it('invalid username', async () => {
       const agent = new Agent()
       const res = await agent.agent
-        .post('/login')
+        .post('/api/login')
         .send({
           username: 'wrong',
           password: agent.credentials.password,
@@ -42,7 +42,7 @@ describe('admin', () => {
     it('invalid password', async () => {
       const agent = new Agent()
       const res = await agent.agent
-        .post('/login')
+        .post('/api/login')
         .send({
           username: agent.credentials.username,
           password: 'wrong',
@@ -56,7 +56,7 @@ describe('admin', () => {
     it('invalid username and password', async () => {
       const agent = new Agent()
       const res = await agent.agent
-        .post('/login')
+        .post('/api/login')
         .send({
           username: 'wrong',
           password: 'wrong',
@@ -72,11 +72,11 @@ describe('admin', () => {
     it('logged in', async () => {
       const agent = new Agent()
       await agent.agent
-        .post('/login')
+        .post('/api/login')
         .send(agent.credentials)
 
       const res = await agent.agent
-        .get('/logout')
+        .get('/api/logout')
 
       expect(res.statusCode).to.equal(302)
       expect(res.headers).to.not.have.property('set-cookie')
@@ -87,7 +87,7 @@ describe('admin', () => {
       const agent = new Agent()
 
       const res = await agent.agent
-        .get('/logout')
+        .get('/api/logout')
 
       expect(res.statusCode).to.equal(302)
       expect(res.headers).to.not.have.property('set-cookie')
@@ -105,7 +105,7 @@ describe('admin', () => {
         const credentials = agent.credentials
 
         const res = await agent.agent
-          .post('/change_password')
+          .post('/api/change_password')
           .send({
             current_password: credentials.password,
             new_password,
@@ -130,7 +130,7 @@ describe('admin', () => {
         const credentials = agent.credentials
 
         const res = await agent.agent
-          .post('/change_password')
+          .post('/api/change_password')
           .send({
             current_password: 'invalid',
             new_password,
@@ -151,7 +151,7 @@ describe('admin', () => {
         const credentials = agent.credentials
 
         const res = await agent.agent
-          .post('/change_password')
+          .post('/api/change_password')
           .send({
             current_password: credentials.password,
             new_password,
@@ -179,7 +179,7 @@ describe('change username', () => {
       const credentials = agent.credentials
 
       const res = await agent.agent
-        .post('/change_username')
+        .post('/api/change_username')
         .send({
           password: credentials.password,
           new_username,
@@ -203,7 +203,7 @@ describe('change username', () => {
       const credentials = agent.credentials
 
       const res = await agent.agent
-        .post('/change_username')
+        .post('/api/change_username')
         .send({
           new_username,
           password: credentials.password,
@@ -225,7 +225,7 @@ describe('change username', () => {
       const credentials = agent.credentials
 
       const res = await agent.agent
-        .post('/change_username')
+        .post('/api/change_username')
         .send({
           new_username,
           password: 'incorrect',
