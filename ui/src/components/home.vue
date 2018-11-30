@@ -73,7 +73,9 @@ export default {
   name: "Home",
   store,
   created() {
-    this.$store.dispatch("loadData");
+    if (!this.$store.state.loaded) {
+      this.$store.dispatch("loadData");
+    }
   },
   data() {
     return {

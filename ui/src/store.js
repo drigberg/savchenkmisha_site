@@ -13,6 +13,7 @@ export const store = new Vuex.Store({
   state: {
     contact: {},
     projects: [],
+    loaded: false,
     login: {
       success: false,
       message: "",
@@ -20,8 +21,11 @@ export const store = new Vuex.Store({
   },
   actions: {
     async loadData({ commit }) {
-      commit("updateContact", await axios.get("/api/contact"))
-      commit("updateProjects", await axios.get("/api/projects"))
+      const [contact, projects] = await Promise.all([axios.get("/api/contact"), axios.get("/api/projects")])
+
+      commit("updateContact", contact)
+      commit("updateProjects", projects)
+      commit("dataLoaded")
     },
     async login({ commit }, { username, password }) {
       console.log('posting!!!', username, password)
@@ -52,6 +56,9 @@ export const store = new Vuex.Store({
     },
   },
   mutations: {
+    dataLoaded(state) {
+      state.loaded = true
+    },
     loginFailure(state, { message }) {
       state.login.message = message
       state.login.success = false
