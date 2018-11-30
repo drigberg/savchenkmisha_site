@@ -4,12 +4,30 @@ personal website for a dear friend, codename Doctor Bear.
 ## Credentials
 Default credentials are generated at startup and logged by the server. They can be changed at any time through the UI or API, as detailed below.
 
+## Setup
+When starting the server, check for default credentials in the console output.
+```
+npm run seed-db
+npm run start:dev
+```
+
 ## UI
+
+The UI acts as a template for all the data. It shows:
+  - banner info
+  - the first three enabled projects it gets from the API
+  - resume download link
+  - contact info
+
+## Admin
 Login with admin credentials to manage projects.
 
+Login route: /login
+Admin page: /admin
+
 Admin abilities:
-- update profile photo (to do)
-- update resume (to do)
+- update contact info
+- upload resume
 - change username
 - change password
 - create project
