@@ -80,6 +80,7 @@ Vue.component("contact", {
         <strong>linkedin:</strong>
         {{ data.linkedin }}
       </p>
+
     </div>`
 });
 

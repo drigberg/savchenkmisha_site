@@ -21,7 +21,7 @@ describe('admin', () => {
         .send(agent.credentials)
 
       expect(res.statusCode).to.equal(302)
-      expect(res.headers).to.have.property('set-cookie').to.be.an('array').with.length(1)
+      expect(res. ).to.have.property('set-cookie').to.be.an('array').with.length(1)
       expect(res.headers.location).to.equal('/')
     })
 

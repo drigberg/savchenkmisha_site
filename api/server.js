@@ -2,14 +2,14 @@
  * Module dependencies
  */
 
-const express = require('express')
-const expressSession = require('express-session')
 const bodyParser = require('body-parser')
-const path = require('path')
-const passport = require('passport')
+const express = require('express')
+const jwt = require('jsonwebtoken')
 const LocalStrategy = require('passport-local')
+const passport = require('passport')
+const passportJWT = require('passport-jwt')
+const path = require('path')
 const db = require('./db')
-
 const {
   authenticate,
 } = require('./middleware')
@@ -28,34 +28,34 @@ const PORT = process.env.PORT || 5000
 app.use(express.static(path.join(__dirname, '..', '/ui/dist')))
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
-app.use(expressSession({
-  secret: db.admin.getSecret(),
-  resave: false,
-  saveUninitialized: false
-}))
-
 app.use(passport.initialize())
 app.use(passport.session())
 
+// check username && password
 passport.use(new LocalStrategy(function (username, password, done) {
   if (!db.admin.checkCredentials(username, password)) {
+    console.log('fail!')
     return done()
   }
+
+  console.log('success!')
 
   return done(null, {
     admin: true
   })
 }))
 
-passport.serializeUser(function (user, done) {
-  done(null, 'admin')
-})
-
-passport.deserializeUser(function (id, done) {
-  done(null, {
-    admin: true
-  })
-})
+// validate JWT
+passport.use(new passportJWT.Strategy({
+  jwtFromRequest: passportJWT.ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secretOrKey: db.admin.getSecret()
+}, (jwtPayload, done) => {
+  if (jwtPayload.admin) {
+    done(null, jwtPayload)
+  } else {
+    done()
+  }
+}))
 
 /**
  * Routes
@@ -65,21 +65,50 @@ app.get('/', function (req, res) {
   res.render('index')
 })
 
-app.get('/login', function (req, res) {
-  res.render('login')
+app.post('/api/login', (req, res) => {
+  passport.authenticate('local', { session: false }, (err, user) => {
+    if (err || !user) {
+      console.log(`Failed login at ${new Date().toISOString()}:`, {
+        err,
+        user
+      })
+
+      res.status(400).json({
+        message: 'login failed',
+        error: err,
+        user,
+      })
+      return
+    }
+
+    req.login(user, { session: false }, (error) => {
+      if (error) {
+        console.log(`Failed login at ${new Date().toISOString()}:`, {
+          error,
+          user
+        })
+
+        res.status(400).json({
+          error,
+          message: 'login failed',
+          user,
+        })
+        return
+      }
+
+      console.log(`Successful login at ${new Date().toISOString()}:`, {
+        user
+      })
+
+      const token = jwt.sign(user, db.admin.getSecret())
+      res.json({ user, token })
+    })
+  })(req, res)
 })
 
-app.post('/api/login', passport.authenticate('local', {
-  successRedirect: '/',
-  failureRedirect: '/login',
-}))
-
 app.get('/api/logout', function (req, res) {
-  if (req.logout) {
-    req.logout()
-  }
-
-  res.redirect('/')
+  db.admin.refreshSecret()
+  res.status(200).json({ success: true })
 })
 
 app.post('/api/change_password', authenticate, function (req, res) {

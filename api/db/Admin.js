@@ -25,7 +25,7 @@ class Admin {
   }
 
   getSecret() {
-    return this.store.data.admin.sessionSecret
+    return this.store.data.admin.secret
   }
 
   update(data) {
@@ -82,19 +82,25 @@ class Admin {
     const password = crypto.randomBytes(6).toString('hex')
     const salt = this.createSalt()
     const hash = this.hashPassword(password, salt)
-    const sessionSecret = crypto.randomBytes(32).toString('hex')
+    const secret = crypto.randomBytes(32).toString('hex')
 
     this.update({
       username,
       hash,
       salt,
-      sessionSecret,
+      secret,
     })
 
     return {
       username,
       password,
     }
+  }
+
+  refreshSecret() {
+    this.update({
+      secret: crypto.randomBytes(32).toString('hex'),
+    })
   }
 
   createSalt() {
