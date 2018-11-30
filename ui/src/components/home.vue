@@ -24,13 +24,6 @@ Vue.component("projects", {
       return this.$store.state.projects;
     }
   },
-  created() {
-    fetch("/api/projects")
-      .then(response => response.json())
-      .then(function(data) {
-        store.commit("updateProjects", data);
-      });
-  },
   template: `
     <div>
       <div class="grid">
@@ -53,13 +46,6 @@ Vue.component("projects", {
 Vue.component("contact", {
   name: "Contact",
   store,
-  created() {
-    fetch("/api/contact")
-      .then(response => response.json())
-      .then(function(data) {
-        store.commit("updateContact", data);
-      });
-  },
   computed: {
     data() {
       return this.$store.state.contact;
@@ -85,6 +71,10 @@ Vue.component("contact", {
 
 export default {
   name: "Home",
+  store,
+  created() {
+    this.$store.dispatch("loadData");
+  },
   data() {
     return {
       title: "MISHA SAVCHENKO",
