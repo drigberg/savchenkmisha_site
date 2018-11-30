@@ -14,21 +14,21 @@
 
 <script>
 import Vue from "vue";
+import { store } from "../store";
 
 Vue.component("projects", {
   name: "Projects",
-  data() {
-    return {
-      data: []
-    };
+  store,
+  computed: {
+    data() {
+      return this.$store.state.projects;
+    }
   },
   created() {
-    const vm = this;
-
     fetch("/api/projects")
       .then(response => response.json())
       .then(function(data) {
-        vm.data = data;
+        store.commit("updateProjects", data);
       });
   },
   template: `
@@ -52,19 +52,18 @@ Vue.component("projects", {
 
 Vue.component("contact", {
   name: "Contact",
-  data() {
-    return {
-      data: {}
-    };
-  },
+  store,
   created() {
-    const vm = this;
-
     fetch("/api/contact")
       .then(response => response.json())
       .then(function(data) {
-        vm.data = data;
+        store.commit("updateContact", data);
       });
+  },
+  computed: {
+    data() {
+      return this.$store.state.contact;
+    }
   },
   template: `
     <div class="hello">
