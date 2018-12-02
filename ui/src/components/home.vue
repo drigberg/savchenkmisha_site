@@ -13,77 +13,29 @@
 <!-- Script -->
 
 <script>
-import Vue from "vue";
-import { store } from "../store";
-
-Vue.component("projects", {
-  name: "Projects",
-  store,
-  computed: {
-    data() {
-      return this.$store.state.projects;
-    }
-  },
-  template: `
-    <div>
-      <div class="grid">
-        <div
-          class="preview main-project"
-          v-if=data.length
-          v-bind:style="{ background: 'url(' + data[0].images[0] + ')', backgroundSize: 'cover', backgroundPosition: 'center'}"></div>
-        <div
-          class="preview minor-project-1"
-          v-if=data.length
-          v-bind:style="{ background: 'url(' + data[1].images[0] + ')', backgroundSize: 'cover', backgroundPosition: 'center'}"></div>
-        <div
-          class="preview minor-project-2"
-          v-if=data.length
-          v-bind:style="{ background: 'url(' + data[2].images[0] + ')', backgroundSize: 'cover', backgroundPosition: 'center'}"></div>
-      </div>
-    </div>`
-});
-
-Vue.component("contact", {
-  name: "Contact",
-  store,
-  computed: {
-    data() {
-      return this.$store.state.contact;
-    }
-  },
-  template: `
-    <div class="hello">
-      <p>
-        <strong>email:</strong>
-        {{ data.email }}
-      </p>
-      <p>
-        <strong>github:</strong>
-        {{ data.github }}
-      </p>
-      <p>
-        <strong>linkedin:</strong>
-        {{ data.linkedin }}
-      </p>
-
-    </div>`
-});
+import { store } from '../store'
+import projects from './projects'
+import contact from './contact'
 
 export default {
-  name: "Home",
+  name: 'Home',
   store,
-  created() {
+  components: {
+    contact,
+    projects
+  },
+  created () {
     if (!this.$store.state.loaded) {
-      this.$store.dispatch("loadData");
+      this.$store.dispatch('loadData')
     }
   },
-  data() {
+  data () {
     return {
-      title: "MISHA SAVCHENKO",
-      subtitle: "Engineer, Grizzly Bear, Proud Father"
-    };
+      title: 'MISHA SAVCHENKO',
+      subtitle: 'Engineer, Grizzly Bear, Proud Father'
+    }
   }
-};
+}
 </script>
 
 <!-- Style -->

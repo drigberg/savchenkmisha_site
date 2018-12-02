@@ -2,7 +2,7 @@
  * Module dependencies
  */
 
-const _ = require("lodash");
+const _ = require('lodash')
 
 /**
  * Module
@@ -10,10 +10,10 @@ const _ = require("lodash");
 
 class Contact {
   constructor(store) {
-    this.store = store;
+    this.store = store
     if (!this.store.data.contact) {
-      this.store.data.contact = {};
-      this.store.save();
+      this.store.data.contact = {}
+      this.store.save()
     }
   }
 
@@ -23,24 +23,24 @@ class Contact {
       github: data.github,
       linkedin: data.linkedin,
       title: data.title,
-    });
+    })
   }
 
   read() {
-    const data = this.store.data.contact;
+    const data = this.store.data.contact
     if (!data) {
-      throw new Error('No data for "contact" page!');
+      throw new Error('No data for "contact" page!')
     }
 
-    return data;
+    return data
   }
 
   update(payload) {
-    this.store.data.contact = this.prepareData(payload);
-    this.store.save();
+    this.store.data.contact = this.prepareData(payload)
+    this.store.save()
 
-    return this.store.data.contact;
+    return this.store.data.contact
   }
 }
 
-module.exports = Contact;
+module.exports = Contact

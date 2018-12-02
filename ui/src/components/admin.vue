@@ -25,62 +25,53 @@
 <!-- Script -->
 
 <script>
-import axios from "axios";
-import Vue from "vue";
-import { store } from "../store";
+import axios from 'axios'
+import { store } from '../store'
 
-Vue.directive("placeholder", {
-  bind: function(el, binding, vnode) {
-    console.log(el, binding, vnode);
-    el.placeholder = binding.value;
-    el.value = binding.value;
-  }
-});
 export default {
-  name: "Admin",
+  name: 'Admin',
   store,
-  data() {
+  data () {
     return {
       contact: {
         email: this.$store.state.contact.email,
         github: this.$store.state.contact.github,
         linkedin: this.$store.state.contact.linkedin
       }
-    };
+    }
   },
-  created() {
+  created () {
     if (!this.$store.state.loaded) {
-      this.$store.dispatch("loadData");
+      this.$store.dispatch('loadData')
     }
   },
   computed: {
-    projectsFromStore() {
-      return JSON.stringify(this.$store.state.projects);
+    projectsFromStore () {
+      return JSON.stringify(this.$store.state.projects)
     },
-    contactFromStore() {
-      return JSON.stringify(this.$store.state.contact);
+    contactFromStore () {
+      return JSON.stringify(this.$store.state.contact)
     }
   },
   methods: {
-    logout: function() {
-      const vm = this;
-      localStorage.removeItem("mishasite-user-token");
+    logout: function () {
+      const vm = this
+      localStorage.removeItem('mishasite-user-token')
 
-      axios.get("/api/logout").then(response => {
-        vm.$router.go("/");
-      });
+      axios.get('/api/logout').then(response => {
+        vm.$router.go('/')
+      })
     },
-    updateContact: function() {
-      const vm = this;
-      this.$store.dispatch("updateContact", vm.contact);
+    updateContact: function () {
+      this.$store.dispatch('updateContact', this.contact)
     }
   },
   watch: {
-    contactFromStore: function(data) {
-      this.contact = JSON.parse(data);
+    contactFromStore: function (data) {
+      this.contact = JSON.parse(data)
     }
   }
-};
+}
 </script>
 
 <!-- Style -->

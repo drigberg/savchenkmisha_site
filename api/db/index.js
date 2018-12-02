@@ -2,28 +2,28 @@
  * Module dependencies
  */
 
-const path = require('path');
-const Admin = require('./Admin');
+const path = require('path')
+const Admin = require('./Admin')
 const Contact = require('./Contact')
-const Projects = require('./Projects');
-const Store = require('./Store');
-const About = require('./About');
+const Projects = require('./Projects')
+const Store = require('./Store')
+const About = require('./About')
 
 /**
  * Module
  */
 
-let storePath = 'db.json';
+let storePath = 'db.json'
 
 if (process.env.NODE_ENV === 'test') {
-  storePath = 'db.test.json';
+  storePath = 'db.test.json'
 }
 
-const store = new Store(path.join(__dirname, storePath));
+const store = new Store(path.join(__dirname, storePath))
 
 function flush() {
-  store.data = {};
-  store.save();
+  store.data = {}
+  store.save()
 }
 
 /**
@@ -36,4 +36,4 @@ module.exports = {
   projects: new Projects(store),
   about: new About(store),
   contact: new Contact(store),
-};
+}

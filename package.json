@@ -13,7 +13,8 @@
     "api:start:dev": "NODE_ENV=production nodemon api/start.js",
     "api:test": "NODE_ENV=test mocha api/test/setup.js api/test/*.test.js",
     "ui:start": "npm run --prefix ui start",
-    "seed-db": "node api/db/seed"
+    "seed-db": "node api/db/seed",
+    "lint": "eslint ./api --fix && cd ui && npm run lint"
   },
   "repository": {
     "type": "git",
@@ -37,6 +38,7 @@
   },
   "devDependencies": {
     "chai": "4.2.0",
+    "eslint": "5.9.0",
     "faker": "4.1.0",
     "mocha": "5.2.0",
     "nodemon": "1.18.7",

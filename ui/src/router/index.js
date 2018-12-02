@@ -6,22 +6,18 @@ import admin from '@/components/admin'
 
 Vue.use(Router)
 
-const ifAuthenticated = (to, from, next) => {
-  if (localStorage.getItem('mishasite-user-token')) {
-    next()
-    return
+function guard (condition, failurePath) {
+  return (to, from, next) => {
+    if (condition()) {
+      next()
+    } else {
+      next(failurePath)
+    }
   }
-  next('/login')
 }
 
-const ifNotAuthenticated = (to, from, next) => {
-  if (!localStorage.getItem('mishasite-user-token')) {
-    next()
-    return
-  }
-
-  next('/admin')
-}
+const isAuthenticated = () => localStorage.getItem('mishasite-user-token')
+const notAuthenticated = () => !localStorage.getItem('mishasite-user-token')
 
 export default new Router({
   routes: [
@@ -34,13 +30,13 @@ export default new Router({
       path: '/login',
       name: 'login',
       component: login,
-      beforeEnter: ifNotAuthenticated,
+      beforeEnter: guard(notAuthenticated, '/admin')
     },
     {
       path: '/admin',
       name: 'admin',
       component: admin,
-      beforeEnter: ifAuthenticated,
-    },
+      beforeEnter: guard(isAuthenticated, '/login')
+    }
   ]
 })
