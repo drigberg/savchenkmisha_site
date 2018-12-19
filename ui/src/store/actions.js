@@ -25,7 +25,7 @@ export default {
       }
 
       localStorage.setItem('mishasite-user-token', token)
-      axios.defaults.headers.common['Authorization'] = token
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
       commit('loginSuccess')
     } catch (err) {
       localStorage.removeItem('mishasite-user-token')
@@ -35,9 +35,13 @@ export default {
     }
   },
   async updateContact({ commit }, payload) {
-    const { data } = await axios
-      .post('/api/contact', payload)
-
-    commit('contact', data)
+    try {
+      const { data } = await axios
+        .post('/api/contact', payload)
+      commit('contact', data)
+      console.log('updated contact!')
+    } catch (err) {
+      console.log('error updating contact!', err.message)
+    }
   }
 }

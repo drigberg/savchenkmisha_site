@@ -2,6 +2,7 @@
  * Module dependencies
  */
 
+const chalk = require('chalk')
 const crypto = require('crypto')
 
 /**
@@ -13,7 +14,7 @@ class Admin {
     this.store = store
     if (!this.store.data || !this.store.data.admin) {
       const credentials = this.createCredentials()
-      console.log('Created default credentials. Change immediately!', credentials)
+      console.log(chalk.cyan('Created default credentials. Change immediately!'), credentials)
     }
   }
 
@@ -26,6 +27,10 @@ class Admin {
 
   getSecret() {
     return this.store.data.admin.secret
+  }
+
+  getCSRF() {
+    return this.store.data.admin.csrf
   }
 
   update(data) {
@@ -42,7 +47,7 @@ class Admin {
       username
     })
 
-    console.log('Updated username')
+    console.log(chalk.green('Updated username'))
   }
 
   updatePassword(password) {
@@ -54,7 +59,7 @@ class Admin {
       salt,
     })
 
-    console.log('Updated password')
+    console.log(chalk.green('Updated password'))
   }
 
   checkCredentials(username, password) {
@@ -66,6 +71,10 @@ class Admin {
     }
 
     return match.username && match.password
+  }
+
+  checkCSRF(csrf) {
+    return csrf === this.getCSRF()
   }
 
   checkUsername(username) {
@@ -82,19 +91,27 @@ class Admin {
     const password = crypto.randomBytes(6).toString('hex')
     const salt = this.createSalt()
     const hash = this.hashPassword(password, salt)
-    const secret = crypto.randomBytes(32).toString('hex')
+    const secret = crypto.randomBytes(64).toString('hex')
+    const csrf = crypto.randomBytes(64).toString('hex')
 
     this.update({
       username,
       hash,
       salt,
       secret,
+      csrf,
     })
 
     return {
       username,
       password,
     }
+  }
+
+  refreshCSRF() {
+    this.update({
+      csrf: crypto.randomBytes(64).toString('hex'),
+    })
   }
 
   refreshSecret() {

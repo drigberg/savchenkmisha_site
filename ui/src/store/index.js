@@ -8,9 +8,10 @@ import getters from './getters'
 Vue.use(Vuex)
 
 const token = localStorage.getItem('mishasite-user-token')
+axios.defaults.headers.common['csrf'] = process.env.CSRF
+
 if (token) {
-  console.log('token!!!')
-  axios.defaults.headers.common['Authorization'] = token
+  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
 }
 
 export const store = new Vuex.Store({
