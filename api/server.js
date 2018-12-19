@@ -150,6 +150,11 @@ app.get('/api/projects', function (req, res) {
   res.json(projects)
 })
 
+app.post('/api/contact', function (req, res) {
+  const contact = db.contact.update(req.body)
+  res.json(contact)
+})
+
 app.post('/api/projects', authenticate, function (req, res) {
   const project = db.projects.insert(req.body)
   console.log('Inserted project', project)

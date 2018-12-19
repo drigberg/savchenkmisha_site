@@ -3,10 +3,11 @@ import Router from 'vue-router'
 import home from '@/components/home'
 import login from '@/components/login'
 import admin from '@/components/admin'
+import getters from '../store/getters'
 
 Vue.use(Router)
 
-function guard (condition, failurePath) {
+function guard(condition, failurePath) {
   return (to, from, next) => {
     if (condition()) {
       next()
@@ -16,8 +17,8 @@ function guard (condition, failurePath) {
   }
 }
 
-const isAuthenticated = () => localStorage.getItem('mishasite-user-token')
-const notAuthenticated = () => !localStorage.getItem('mishasite-user-token')
+const isAuthenticated = () => getters.isLoggedIn()
+const notAuthenticated = () => !getters.isLoggedIn()
 
 export default new Router({
   routes: [

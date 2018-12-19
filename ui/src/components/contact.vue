@@ -1,30 +1,34 @@
 <template>
   <div class="hello">
-    <p>
-      <strong>email:</strong>
-      {{ data.email }}
-    </p>
+    <div>
+      <p>
+        <strong>email:</strong>
+        {{ contact.email }}
+      </p>
+      <input v-if="$store.getters.isLoggedIn" v-model="contact.email" name="email" type="text">
+    </div>
+
     <p>
       <strong>github:</strong>
-      {{ data.github }}
+      {{ contact.github }}
     </p>
     <p>
       <strong>linkedin:</strong>
-      {{ data.linkedin }}
+      {{ contact.linkedin }}
     </p>
   </div>
 </template>
 
 <script>
-import { store } from '../store'
+import { store } from "../store";
 
 export default {
-  name: 'Contact',
+  name: "Contact",
   store,
   computed: {
-    data () {
-      return this.$store.state.contact
+    contact() {
+      return this.$store.state.contact;
     }
   }
-}
+};
 </script>
