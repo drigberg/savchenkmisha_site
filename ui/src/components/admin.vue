@@ -1,21 +1,25 @@
 <!-- Template -->
 <template>
   <div class="hello">
-    <h1>ADMIN</h1>
+    <h1>USER MANAGEMENT</h1>
     <button @click="logout">Logout</button>
-    <form @submit.prevent="updateContact">
-      <h1>Contact info</h1>
+    <form @submit.prevent="updateCredentials">
+      <h1>Credentials</h1>
       <div>
-        <label for="email">Email</label>
-        <input v-model="contact.email" name="email" type="text">
+        <label for="current_username">Current Username</label>
+        <input v-model="credentials.current_username" name="current_username" type="text">
       </div>
       <div>
-        <label for="github">Github</label>
-        <input v-model="contact.github" name="github" type="text">
+        <label for="current_password">Current Password</label>
+        <input v-model="credentials.current_password" name="current_password" type="text">
       </div>
       <div>
-        <label for="linkedin">LinkedIn</label>
-        <input v-model="contact.linkedin" name="linkedin" type="text">
+        <label for="new_username">New Username</label>
+        <input v-model="credentials.new_username" name="new_username" type="text">
+      </div>
+      <div>
+        <label for="new_password">New Password</label>
+        <input v-model="credentials.new_password" name="new_password" type="text">
       </div>
       <button type="submit">Update</button>
     </form>
@@ -25,53 +29,50 @@
 <!-- Script -->
 
 <script>
-import axios from 'axios'
-import { store } from '../store'
+import axios from "axios";
+import { store } from "../store";
 
 export default {
-  name: 'Admin',
+  name: "Admin",
   store,
-  data () {
+  data() {
     return {
-      contact: {
-        email: this.$store.state.contact.email,
-        github: this.$store.state.contact.github,
-        linkedin: this.$store.state.contact.linkedin
+      credentials: {
+        current_username: "",
+        current_password: "",
+        new_username: "",
+        new_password: ""
       }
-    }
-  },
-  created () {
-    if (!this.$store.state.loaded) {
-      this.$store.dispatch('loadData')
-    }
-  },
-  computed: {
-    projectsFromStore () {
-      return JSON.stringify(this.$store.state.projects)
-    },
-    contactFromStore () {
-      return JSON.stringify(this.$store.state.contact)
-    }
+    };
   },
   methods: {
-    logout: function () {
-      const vm = this
-      localStorage.removeItem('mishasite-user-token')
+    logout: function() {
+      const vm = this;
+      localStorage.removeItem("mishasite-user-token");
 
-      axios.get('/api/logout').then(response => {
-        vm.$router.go('/')
-      })
+      axios.get("/api/logout").then(response => {
+        vm.$router.go("/");
+      });
     },
-    updateContact: function () {
-      this.$store.dispatch('updateContact', this.contact)
-    }
-  },
-  watch: {
-    contactFromStore: function (data) {
-      this.contact = JSON.parse(data)
+    updateCredentials: function() {
+      if (
+        !this.credentials.current_username ||
+        !this.credentials.current_password
+      ) {
+        console.log("need current username and password!");
+        return;
+      }
+
+      if (!this.credentials.new_username && !this.credentials.new_password) {
+        console.log("nothing to update!");
+        return;
+      }
+
+      this.$store.dispatch("updateCredentials", this.credentials);
+      this.logout();
     }
   }
-}
+};
 </script>
 
 <!-- Style -->

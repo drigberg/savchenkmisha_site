@@ -13,29 +13,29 @@
 <!-- Script -->
 
 <script>
-import { store } from '../store'
-import projects from './projects'
-import contact from './contact'
+import { store } from "../store";
+import projects from "./projects";
+import contact from "./contact";
 
 export default {
-  name: 'Home',
+  name: "Home",
   store,
   components: {
     contact,
     projects
   },
-  created () {
+  created() {
     if (!this.$store.state.loaded) {
-      this.$store.dispatch('loadData')
+      this.$store.dispatch("loadData");
     }
   },
-  data () {
+  data() {
     return {
-      title: 'MISHA SAVCHENKO',
-      subtitle: 'Engineer, Grizzly Bear, Proud Father'
-    }
+      title: "MISHA SAVCHENKO",
+      subtitle: "Engineer, Grizzly Bear, Proud Father"
+    };
   }
-}
+};
 </script>
 
 <!-- Style -->

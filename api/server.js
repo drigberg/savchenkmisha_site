@@ -112,31 +112,24 @@ app.get('/api/logout', function (req, res) {
   res.status(200).json({ success: true })
 })
 
-app.post('/api/change_password', passport.authenticate('jwt', { session: false }), function (req, res) {
-  if (!db.admin.checkPassword(req.body.current_password)) {
-    res.status(500).send('incorrect password')
+app.post('/api/change_credentials', passport.authenticate('jwt', { session: false }), function (req, res) {
+  if (!db.admin.checkCredentials(req.body.current_username, req.body.current_password)) {
+    res.status(500).send('incorrect credentials')
     return
   }
 
-  db.admin.updatePassword(req.body.new_password)
-  console.log(chalk.green(`Updated password at ${new Date().toISOString()}! Logging out.`))
-
-  req.logout()
-  res.redirect('/')
-})
-
-app.post('/api/change_username', passport.authenticate('jwt', { session: false }), function (req, res) {
-  if (!db.admin.checkPassword(req.body.password)) {
-    res.status(500).send('incorrect password')
-    return
+  if (req.body.new_password) {
+    db.admin.updatePassword(req.body.new_password)
+    console.log(chalk.green(`Updated password at ${new Date().toISOString()}! Logging out.`))
   }
 
-  db.admin.updateUsername(req.body.new_username)
-
-  console.log(chalk.green(`Updated username at ${new Date().toISOString()}! Logging out.`))
+  if (req.body.new_username) {
+    db.admin.updateUsername(req.body.new_username)
+    console.log(chalk.green(`Updated username at ${new Date().toISOString()}! Logging out.`))
+  }
 
   req.logout()
-  res.redirect('/')
+  res.json({ ok: 'ok' })
 })
 
 app.get('/api/about', function (req, res) {

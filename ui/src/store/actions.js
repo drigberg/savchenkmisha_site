@@ -36,12 +36,20 @@ export default {
   },
   async updateContact({ commit }, payload) {
     try {
-      const { data } = await axios
-        .post('/api/contact', payload)
+      const { data } = await axios.post('/api/contact', payload)
       commit('contact', data)
       console.log('updated contact!')
     } catch (err) {
       console.log('error updating contact!', err.message)
+    }
+  },
+  async updateCredentials(_ctx, payload) {
+    try {
+      await axios.post('/api/change_credentials', payload)
+
+      console.log('updated credentials!')
+    } catch (err) {
+      console.log('error updating credentials!', err.message)
     }
   }
 }
