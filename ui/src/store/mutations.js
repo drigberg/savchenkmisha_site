@@ -8,6 +8,7 @@ export default {
     state.login.success = false
   },
   loginSuccess(state) {
+    state.loggedIn = true
     state.login.success = true
   },
   contact(state, data) {

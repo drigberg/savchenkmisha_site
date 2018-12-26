@@ -7,20 +7,19 @@ import getters from './getters'
 
 Vue.use(Vuex)
 
-const token = localStorage.getItem('mishasite-user-token')
-axios.defaults.headers.common['csrf'] = process.env.CSRF
+const [csrfElement] = document.getElementsByName('csrf')
+const [loginElement] = document.getElementsByName('loggedIn')
 
-if (token) {
-  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-}
+axios.defaults.headers.common['csrf'] = csrfElement ? csrfElement.content : null
 
 export const store = new Vuex.Store({
   state: {
     contact: {},
     projects: [],
     loaded: false,
+    loggedIn: loginElement ? loginElement.content : false,
     login: {
-      success: false,
+      success: null,
       message: ''
     }
   },

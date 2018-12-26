@@ -16,7 +16,7 @@
       {{ contact.linkedin }}
     </p>
 
-    <form @submit.prevent="update" v-if="$store.getters.isLoggedIn">
+    <form @submit.prevent="update" v-if="$store.state.loggedIn">
       <h1>UPDATE CONTACT</h1>
       <div>
         <label for="email">Email</label>

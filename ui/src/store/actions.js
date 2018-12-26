@@ -16,21 +16,17 @@ export default {
           password
         })
 
-      const token = data.token
-      if (!token) {
+      if (!data.success) {
         commit('loginFailure', {
-          message: data.message || 'Login failed, sry brah'
+          message: data.message || 'Invalid username/password combo, brah'
         })
         return
       }
 
-      localStorage.setItem('mishasite-user-token', token)
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
       commit('loginSuccess')
     } catch (err) {
-      localStorage.removeItem('mishasite-user-token')
       commit('loginFailure', {
-        message: 'Login failed, sry brah'
+        message: 'Login failed due to a server err, yo'
       })
     }
   },

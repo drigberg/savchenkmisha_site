@@ -29,10 +29,6 @@ class Admin {
     return this.store.data.admin.secret
   }
 
-  getCSRF() {
-    return this.store.data.admin.csrf
-  }
-
   update(data) {
     this.store.data.admin = {
       ...this.store.data.admin,
@@ -73,10 +69,6 @@ class Admin {
     return match.username && match.password
   }
 
-  checkCSRF(csrf) {
-    return csrf === this.getCSRF()
-  }
-
   checkUsername(username) {
     return username === this.store.data.admin.username
   }
@@ -92,26 +84,18 @@ class Admin {
     const salt = this.createSalt()
     const hash = this.hashPassword(password, salt)
     const secret = crypto.randomBytes(64).toString('hex')
-    const csrf = crypto.randomBytes(64).toString('hex')
 
     this.update({
       username,
       hash,
       salt,
       secret,
-      csrf,
     })
 
     return {
       username,
       password,
     }
-  }
-
-  refreshCSRF() {
-    this.update({
-      csrf: crypto.randomBytes(64).toString('hex'),
-    })
   }
 
   refreshSecret() {

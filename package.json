@@ -4,8 +4,9 @@
   "description": "personal website for a dear friend",
   "main": "index.js",
   "scripts": {
-    "start": "npm-run-all --parallel api:start ui:start",
+    "start": "NODE_ENV=production node api/start.js",
     "start:dev": "npm-run-all --parallel api:start:dev ui:start",
+    "start:prod": "npm run build; npm run start",
     "test": "npm run api:test",
     "build": "npm run --prefix ui build",
     "postinstall": "cd ui && npm install",
@@ -34,13 +35,16 @@
   "dependencies": {
     "body-parser": "1.18.3",
     "chalk": "2.4.1",
+    "connect-redis": "3.4.0",
     "express": "4.16.4",
+    "express-session": "1.15.6",
+    "ioredis": "4.3.0",
     "jsonwebtoken": "8.4.0",
     "lodash": "4.17.11",
     "npm-run-all": "4.1.5",
     "passport": "0.4.0",
-    "passport-jwt": "4.0.0",
     "passport-local": "1.0.0",
+    "pug": "2.0.3",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
