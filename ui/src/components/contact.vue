@@ -1,5 +1,5 @@
 <template>
-  <div class="hello">
+  <div>
     <div>
       <p>
         <strong>email:</strong>
@@ -66,3 +66,6 @@ export default {
   }
 };
 </script>
+
+<style>
+</style>

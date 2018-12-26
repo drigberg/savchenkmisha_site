@@ -20,9 +20,8 @@ describe('admin', () => {
         .post('/api/login')
         .send(agent.credentials)
 
-      expect(res.statusCode).to.equal(302)
-      expect(res).to.have.property('set-cookie').to.be.an('array').with.length(1)
-      expect(res.headers.location).to.equal('/')
+      expect(res.statusCode).to.equal(200)
+      expect(res.body.success).to.equal(true)
     })
 
     it('invalid username', async () => {
@@ -34,9 +33,7 @@ describe('admin', () => {
           password: agent.credentials.password,
         })
 
-      expect(res.statusCode).to.equal(302)
-      expect(res.headers).to.not.have.property('set-cookie')
-      expect(res.headers.location).to.equal('/login')
+      expect(res.statusCode).to.equal(401)
     })
 
     it('invalid password', async () => {
@@ -48,9 +45,7 @@ describe('admin', () => {
           password: 'wrong',
         })
 
-      expect(res.statusCode).to.equal(302)
-      expect(res.headers).to.not.have.property('set-cookie')
-      expect(res.headers.location).to.equal('/login')
+      expect(res.statusCode).to.equal(401)
     })
 
     it('invalid username and password', async () => {
@@ -62,9 +57,7 @@ describe('admin', () => {
           password: 'wrong',
         })
 
-      expect(res.statusCode).to.equal(302)
-      expect(res.headers).to.not.have.property('set-cookie')
-      expect(res.headers.location).to.equal('/login')
+      expect(res.statusCode).to.equal(401)
     })
   })
 
@@ -78,9 +71,8 @@ describe('admin', () => {
       const res = await agent.agent
         .get('/api/logout')
 
-      expect(res.statusCode).to.equal(302)
-      expect(res.headers).to.not.have.property('set-cookie')
-      expect(res.headers.location).to.equal('/')
+      expect(res.statusCode).to.equal(200)
+      expect(res.body.success).to.equal(true)
     })
 
     it('already logged out', async () => {
@@ -89,15 +81,14 @@ describe('admin', () => {
       const res = await agent.agent
         .get('/api/logout')
 
-      expect(res.statusCode).to.equal(302)
-      expect(res.headers).to.not.have.property('set-cookie')
-      expect(res.headers.location).to.equal('/')
+      expect(res.statusCode).to.equal(200)
+      expect(res.body.success).to.equal(true)
     })
   })
 
-  describe('change password', () => {
+  describe.skip('change credentials', () => {
     describe('success', () => {
-      it('current password matches', async () => {
+      it('change password', async () => {
         const agent = new Agent()
         await agent.login()
 
@@ -105,18 +96,66 @@ describe('admin', () => {
         const credentials = agent.credentials
 
         const res = await agent.agent
-          .post('/api/change_password')
+          .post('/api/change_credentials')
           .send({
             current_password: credentials.password,
+            current_username: credentials.username,
             new_password,
           })
 
-        expect(res.statusCode).to.equal(302)
-        expect(res.headers).to.not.have.property('set-cookie')
-        expect(res.headers.location).to.equal('/')
+        expect(res.statusCode).to.equal(200)
+        expect(res.body.success).to.equal(true)
 
         const updated = db.admin.getCredentials()
         expect(updated.username).equal(credentials.username)
+        expect(db.admin.checkPassword(new_password)).to.equal(true)
+      })
+
+      it('change username', async () => {
+        const agent = new Agent()
+        await agent.login()
+
+        const new_username = faker.random.alphaNumeric(15)
+        const credentials = agent.credentials
+
+        const res = await agent.agent
+          .post('/api/change_credentials')
+          .send({
+            current_password: credentials.password,
+            current_username: credentials.username,
+            new_username,
+          })
+
+        expect(res.statusCode).to.equal(200)
+        expect(res.body.success).to.equal(true)
+
+        const updated = db.admin.getCredentials()
+        expect(updated.username).equal(new_username)
+        expect(db.admin.checkPassword(credentials.password)).to.equal(true)
+      })
+
+      it('change both', async () => {
+        const agent = new Agent()
+        await agent.login()
+
+        const new_password = faker.random.alphaNumeric(15)
+        const new_username = faker.random.alphaNumeric(15)
+        const credentials = agent.credentials
+
+        const res = await agent.agent
+          .post('/api/change_credentials')
+          .send({
+            current_password: credentials.password,
+            current_username: credentials.username,
+            new_password,
+            new_username,
+          })
+
+        expect(res.statusCode).to.equal(200)
+        expect(res.body.success).to.equal(true)
+
+        const updated = db.admin.getCredentials()
+        expect(updated.username).equal(new_username)
         expect(db.admin.checkPassword(new_password)).to.equal(true)
       })
     })
@@ -130,14 +169,38 @@ describe('admin', () => {
         const credentials = agent.credentials
 
         const res = await agent.agent
-          .post('/api/change_password')
+          .post('/api/change_credentials')
           .send({
             current_password: 'invalid',
+            current_username: credentials.username,
             new_password,
           })
 
-        expect(res.statusCode).to.equal(500)
-        expect(res.text).to.equal('incorrect password')
+        expect(res.statusCode).to.equal(400)
+        expect(res.text).to.equal('incorrect credentials')
+
+        const updated = db.admin.getCredentials()
+        expect(updated.username).equal(credentials.username)
+        expect(db.admin.checkPassword(credentials.password)).to.equal(true)
+      })
+
+      it('incorrect current username', async () => {
+        const agent = new Agent()
+        await agent.login()
+
+        const new_password = faker.random.alphaNumeric(15)
+        const credentials = agent.credentials
+
+        const res = await agent.agent
+          .post('/api/change_credentials')
+          .send({
+            current_password: credentials.password,
+            current_username: 'invalid',
+            new_password,
+          })
+
+        expect(res.statusCode).to.equal(400)
+        expect(res.text).to.equal('incorrect credentials')
 
         const updated = db.admin.getCredentials()
         expect(updated.username).equal(credentials.username)
@@ -151,92 +214,20 @@ describe('admin', () => {
         const credentials = agent.credentials
 
         const res = await agent.agent
-          .post('/api/change_password')
+          .post('/api/change_credentials')
           .send({
             current_password: credentials.password,
             new_password,
           })
 
-        expect(res.statusCode).to.equal(500)
-        expect(res.text).to.equal('Not authenticated')
+        expect(res.statusCode).to.equal(400)
+        expect(res.text).to.equal('incorrect credentials')
 
         const updated = db.admin.getCredentials()
         expect(updated.username).equal(credentials.username)
         expect(db.admin.checkPassword(new_password)).to.equal(false)
         expect(db.admin.checkPassword(credentials.password)).to.equal(true)
       })
-    })
-  })
-})
-
-describe('change username', () => {
-  describe('success', () => {
-    it('current password and username match', async () => {
-      const agent = new Agent()
-      await agent.login()
-
-      const new_username = faker.random.alphaNumeric(15)
-      const credentials = agent.credentials
-
-      const res = await agent.agent
-        .post('/api/change_username')
-        .send({
-          password: credentials.password,
-          new_username,
-        })
-
-      expect(res.statusCode).to.equal(302)
-      expect(res.headers).to.not.have.property('set-cookie')
-      expect(res.headers.location).to.equal('/')
-
-      const updated = db.admin.getCredentials()
-      expect(updated.username).equal(new_username)
-      expect(db.admin.checkPassword(credentials.password)).to.equal(true)
-    })
-  })
-
-  describe('failure', () => {
-    it('unauthenticated', async () => {
-      const agent = new Agent()
-
-      const new_username = faker.random.alphaNumeric(15)
-      const credentials = agent.credentials
-
-      const res = await agent.agent
-        .post('/api/change_username')
-        .send({
-          new_username,
-          password: credentials.password,
-        })
-
-      expect(res.statusCode).to.equal(500)
-      expect(res.text).to.equal('Not authenticated')
-
-      const updated = db.admin.getCredentials()
-      expect(updated.username).equal(credentials.username)
-      expect(db.admin.checkPassword(credentials.password)).to.equal(true)
-    })
-
-    it('incorrect current password', async () => {
-      const agent = new Agent()
-      await agent.login()
-
-      const new_username = faker.random.alphaNumeric(15)
-      const credentials = agent.credentials
-
-      const res = await agent.agent
-        .post('/api/change_username')
-        .send({
-          new_username,
-          password: 'incorrect',
-        })
-
-      expect(res.statusCode).to.equal(500)
-      expect(res.text).to.equal('incorrect password')
-
-      const updated = db.admin.getCredentials()
-      expect(updated.username).equal(credentials.username)
-      expect(db.admin.checkPassword(credentials.password)).to.equal(true)
     })
   })
 })

@@ -1,21 +1,34 @@
 
 export default {
+  banner(state, data) {
+    state.banner = data
+  },
+  contact(state, data) {
+    state.contact = {
+      email: data.email,
+      linkedin: data.linkedin,
+      github: data.github
+    }
+  },
   dataLoaded(state) {
     state.loaded = true
   },
-  loginFailure(state, { message }) {
-    state.login.message = message
-    state.login.success = false
+  flashMessage(state, data) {
+    const id = Math.random().toString()
+
+    state.flash.message = data.message
+    state.flash.page = data.page
+    state.flash.id = id
+
+    setTimeout(() => {
+      if (state.flash.id === id) {
+        state.flash.message = ''
+        state.flash.page = ''
+      }
+    }, 5000)
   },
   loginSuccess(state) {
     state.loggedIn = true
-    state.login.success = true
-  },
-  contact(state, data) {
-    state.contact = data
-  },
-  header(state, data) {
-    state.header = data
   },
   projects(state, data) {
     state.projects = data

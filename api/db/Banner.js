@@ -8,38 +8,38 @@ const _ = require('lodash')
  * Module
  */
 
-class About {
+class Banner {
   constructor(store) {
     this.store = store
-    if (!this.store.data.about) {
-      this.store.data.about = {}
+    if (!this.store.data.banner) {
+      this.store.data.banner = {}
       this.store.save()
     }
   }
 
   prepareData(data) {
     return _.pickBy({
-      text: data.text,
       title: data.title,
-      images: data.images
+      subtitle: data.subtitle,
+      bio: data.bio
     })
   }
 
   read() {
-    const data = this.store.data.about
+    const data = this.store.data.banner
     if (!data) {
-      throw new Error('No data for "about" page!')
+      throw new Error('No data for banner!')
     }
 
     return data
   }
 
   update(payload) {
-    this.store.data.about = this.prepareData(payload)
+    this.store.data.banner = this.prepareData(payload)
     this.store.save()
 
-    return this.store.data.about
+    return this.store.data.banner
   }
 }
 
-module.exports = About
+module.exports = Banner

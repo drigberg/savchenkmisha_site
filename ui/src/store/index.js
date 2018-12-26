@@ -13,15 +13,15 @@ axios.defaults.headers.common['csrf'] = csrfElement ? csrfElement.content : null
 
 export const store = new Vuex.Store({
   state: {
+    banner: {},
     contact: {},
-    header: {},
-    projects: [],
+    flash: {
+      page: '',
+      message: ''
+    },
     loaded: false,
     loggedIn: loginElement ? loginElement.content : false,
-    login: {
-      success: null,
-      message: ''
-    }
+    projects: []
   },
   actions,
   mutations

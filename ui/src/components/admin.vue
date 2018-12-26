@@ -1,17 +1,18 @@
 <!-- Template -->
 <template>
-  <div class="hello">
+  <div>
+    <p class="flash" v-if="flashMessage">{{ flashMessage }}</p>
     <h1>USER MANAGEMENT</h1>
     <button @click="logout">Logout</button>
     <form @submit.prevent="updateCredentials">
       <h1>Credentials</h1>
       <div>
         <label for="current_username">Current Username</label>
-        <input v-model="credentials.current_username" name="current_username" type="text">
+        <input v-model="credentials.current_username" name="current_username" type="text" required>
       </div>
       <div>
         <label for="current_password">Current Password</label>
-        <input v-model="credentials.current_password" name="current_password" type="text">
+        <input v-model="credentials.current_password" name="current_password" type="text" required>
       </div>
       <div>
         <label for="new_username">New Username</label>
@@ -23,60 +24,74 @@
       </div>
       <button type="submit">Update</button>
     </form>
+    <router-link to="/">Home</router-link>
   </div>
 </template>
 
 <!-- Script -->
 
 <script>
-import axios from 'axios'
-import { store } from '../store'
+import axios from "axios";
+import { store } from "../store";
 
 export default {
-  name: 'Admin',
+  name: "Admin",
   store,
+  computed: {
+    flashMessage() {
+      if (["admin", "*"].includes(this.$store.state.flash.page)) {
+        return this.$store.state.flash.message;
+      }
+
+      return "";
+    }
+  },
   data() {
     return {
       credentials: {
-        current_username: '',
-        current_password: '',
-        new_username: '',
-        new_password: ''
+        current_username: "",
+        current_password: "",
+        new_username: "",
+        new_password: ""
       }
-    }
+    };
   },
   methods: {
     logout: function() {
-      const vm = this
-      localStorage.removeItem('mishasite-user-token')
+      const vm = this;
+      localStorage.removeItem("mishasite-user-token");
 
-      axios.get('/api/logout').then(response => {
-        vm.$router.go('/')
-      })
+      axios.get("/api/logout").then(response => {
+        vm.$router.go("/");
+      });
     },
     updateCredentials: function() {
       if (
         !this.credentials.current_username ||
         !this.credentials.current_password
       ) {
-        console.log('need current username and password!')
-        return
+        return;
       }
 
       if (!this.credentials.new_username && !this.credentials.new_password) {
-        console.log('nothing to update!')
-        return
+        return;
       }
 
-      this.$store.dispatch('updateCredentials', this.credentials)
-      this.logout()
+      this.$store.dispatch("updateCredentials", this.credentials);
+      this.logout();
     }
   }
-}
+};
 </script>
 
 <!-- Style -->
 <style>
+.flash {
+  background-color: #137aee;
+  color: white;
+  border-radius: 5px;
+}
+
 div > form {
   display: block;
   margin: 10px auto;

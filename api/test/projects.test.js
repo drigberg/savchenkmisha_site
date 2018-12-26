@@ -13,7 +13,7 @@ const Agent = require('./Agent')
  * Module
  */
 
-describe('projects', () => {
+describe.skip('projects', () => {
   before(async () => {
     db.projects.removeAll()
     this.unauthenticated = new Agent()
@@ -42,6 +42,7 @@ describe('projects', () => {
         expect(res.text).to.equal('Not authenticated')
       })
     })
+
     describe('success', () => {
       it('only title', async () => {
         const data = {

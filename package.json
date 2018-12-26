@@ -5,11 +5,11 @@
   "main": "index.js",
   "scripts": {
     "start": "npm run start:prod",
-    "start:dev": "npm-run-all --parallel api:start:dev ui:build:dev",
+    "start:dev": "npm-run-all --parallel api:start:dev build:dev",
     "start:prod": "npm run build; npm run start",
     "test": "npm run api:test",
     "build": "npm run --prefix ui build",
-    "ui:build:dev": "npm run --prefix ui build:dev",
+    "build:dev": "npm run --prefix ui build:dev",
     "postinstall": "cd ui && npm install",
     "api:start": "NODE_ENV=production node api/start.js",
     "api:start:dev": "NODE_ENV=production nodemon --watch ./api api/start.js",
@@ -39,13 +39,11 @@
     "express": "4.16.4",
     "express-session": "1.15.6",
     "ioredis": "4.3.0",
-    "jsonwebtoken": "8.4.0",
     "lodash": "4.17.11",
-    "npm-run-all": "4.1.5",
     "passport": "0.4.0",
     "passport-local": "1.0.0",
     "pug": "2.0.3",
-    "uuid": "^3.3.2"
+    "uuid": "3.3.2"
   },
   "devDependencies": {
     "chai": "4.2.0",
@@ -53,6 +51,7 @@
     "faker": "4.1.0",
     "mocha": "5.2.0",
     "nodemon": "1.18.7",
+    "npm-run-all": "4.1.5",
     "request-promise": "4.2.2",
     "supertest": "3.3.0"
   }

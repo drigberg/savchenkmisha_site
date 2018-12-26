@@ -8,8 +8,11 @@ const db = require('./index')
  * Module
  */
 
+
+console.log('Removing projects...')
 db.projects.removeAll()
 
+console.log('Inserting projects...')
 db.projects.insert({
   title: 'robocop',
   description: 'Bears are on every continent mostly',
@@ -37,11 +40,7 @@ db.projects.insert({
   ]
 })
 
-db.about.update({
-  text: 'Hiya! My name is Misha, and I am an engineer. That\'s right, I build things! Crazy, right? Right! This site was built by my friends, so if you hate it, hate them! I do! Join me!',
-  title: 'About Me-sha',
-  images: ['https://i.pinimg.com/236x/0d/f2/de/0df2de6df5274fd63a076c7bf1b4fd1e--prayers-katie-omalley.jpg']
-})
+console.log('Updating text...')
 
 db.contact.update({
   email: 'someone@somewhere.com',
@@ -49,3 +48,11 @@ db.contact.update({
   linkedin: 'https://linkedin/gandondorfedin',
   title: 'How To Reach Me'
 })
+
+db.banner.update({
+  title: 'MISHA SAVCHENKO',
+  subtitle: 'Engineer, Grizzly Bear, Proud Father',
+  bio: 'Hiya! My name is Misha, and I am an engineer. That\'s right, I build things! Crazy, right? Right! This site was built by my friends, so if you hate it, hate them! I do! Join me!',
+})
+
+console.log('Done seeding db!')

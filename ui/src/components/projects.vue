@@ -21,15 +21,15 @@
 </template>
 
 <script>
-import { store } from '../store'
+import { store } from "../store";
 
 export default {
-  name: 'Projects',
+  name: "Projects",
   store,
   computed: {
-    data () {
-      return this.$store.state.projects
+    data() {
+      return this.$store.state.projects;
     }
   }
-}
+};
 </script>

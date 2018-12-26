@@ -19,7 +19,6 @@ const crypto = require('crypto')
  */
 
 const app = express()
-const PORT = process.env.PORT || 5000
 
 /**
  * Middleware
@@ -77,6 +76,7 @@ function authenticate(req, res, next) {
     csrf: req.headers.csrf
   })
 
+  //  && req.headers.csrf && req.headers.csrf === req.session.csrf
   if (req.isAuthenticated()) {
     next()
   } else {
@@ -87,6 +87,16 @@ function authenticate(req, res, next) {
 /**
  * Routes
  */
+
+function logout(req) {
+  if (req.logout) {
+    req.logout()
+  }
+
+  if (req.session) {
+    req.session.csrf = null
+  }
+}
 
 app.get('/', function (req, res) {
   res.render('index', {
@@ -103,14 +113,30 @@ app.post('/api/login', passport.authenticate('local'), (req, res) => {
 app.get('/api/logout', function (req, res) {
   console.log(`Logout at ${new Date().toISOString()}`)
   db.admin.refreshSecret()
-  req.logout()
-  req.session.csrf = null
+
+  logout(req)
+
   res.status(200).json({ success: true })
+})
+
+app.post('/api/reset_credentials', function (req, res) {
+  console.log(`Reset credentials at ${new Date().toISOString()}`)
+
+  if (!db.admin.checkUsername(req.body.username)) {
+    res.status(400).send('no such user')
+    return
+  }
+
+  db.admin.resetCredentials()
+
+  logout(req)
+
+  res.json({ success: true })
 })
 
 app.post('/api/change_credentials', authenticate, function (req, res) {
   if (!db.admin.checkCredentials(req.body.current_username, req.body.current_password)) {
-    res.status(500).send('incorrect credentials')
+    res.status(400).send('incorrect credentials')
     return
   }
 
@@ -125,17 +151,17 @@ app.post('/api/change_credentials', authenticate, function (req, res) {
   }
 
   req.logout()
-  res.json({ ok: 'ok' })
-})
-
-app.get('/api/about', function (req, res) {
-  const about = db.about.read()
-  res.json(about)
+  res.json({ success: true })
 })
 
 app.get('/api/contact', function (req, res) {
   const contact = db.contact.read()
   res.json(contact)
+})
+
+app.get('/api/banner', function (req, res) {
+  const banner = db.banner.read()
+  res.json(banner)
 })
 
 app.get('/api/projects', function (req, res) {
@@ -148,6 +174,13 @@ app.post('/api/contact', authenticate, function (req, res) {
   console.log(`Updated contact at ${new Date().toISOString()}:`, contact)
 
   res.json(contact)
+})
+
+app.post('/api/banner', authenticate, function (req, res) {
+  const banner = db.banner.update(req.body)
+  console.log(`Updated banner at ${new Date().toISOString()}:`, banner)
+
+  res.json(banner)
 })
 
 app.post('/api/projects', authenticate, function (req, res) {
@@ -176,10 +209,10 @@ app.get('*', (req, res) => {
 })
 
 class Server {
-  start() {
+  start(port) {
     const that = this
     return new Promise(function (resolve, reject) {
-      that.server = app.listen(PORT, function (err) {
+      that.server = app.listen(port, function (err) {
         if (err) {
           reject(err)
         } else {
@@ -188,7 +221,7 @@ class Server {
       })
     })
       .then(() => {
-        console.log(`Server is running on port ${PORT}`)
+        console.log(`Server is running on port ${port}`)
       })
       .catch((err) => {
         console.log('Error starting server', err)

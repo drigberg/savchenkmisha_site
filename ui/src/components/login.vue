@@ -1,9 +1,9 @@
 <!-- Template -->
 <template>
-  <div class="hello">
+  <div>
+    <p class="flash" v-if="flashMessage">{{ flashMessage }}</p>
     <form @submit.prevent="login">
       <h1>Login</h1>
-      <p v-if="loginMessage">{{ loginMessage }}</p>
       <input required v-model="username" name="username" type="text">
       <label for="username">Username</label>
       <input required v-model="password" name="password" type="text">
@@ -11,6 +11,12 @@
       <button type="submit">Login</button>
     </form>
     <br>
+    <form @submit.prevent="resetPassword">
+      <h1>Forgot password?</h1>
+      <input required v-model="username" name="username" type="text">
+      <label for="username">Username</label>
+      <button type="submit">Reset</button>
+    </form>
     <router-link to="/">Home</router-link>
   </div>
 </template>
@@ -18,45 +24,61 @@
 <!-- Script -->
 
 <script>
-import { store } from '../store'
+import { store } from "../store";
 
 export default {
-  name: 'Login',
+  name: "Login",
   store,
-  data () {
+  data() {
     return {
-      password: '',
-      username: ''
-    }
+      password: "",
+      username: ""
+    };
   },
   methods: {
-    login: function () {
-      const vm = this
+    login: function() {
+      const vm = this;
 
-      this.$store.dispatch('login', {
+      this.$store.dispatch("login", {
         username: vm.username,
         password: vm.password
-      })
+      });
+    },
+    resetPassword: function() {
+      const vm = this;
+
+      this.$store.dispatch("resetPassword", {
+        username: vm.username
+      });
     }
   },
   computed: {
-    loginStatus () {
-      return this.$store.state.login.success
+    loginStatus() {
+      return this.$store.state.loggedIn;
     },
-    loginMessage () {
-      return this.$store.state.login.message
+    flashMessage() {
+      if (["login", "*"].includes(this.$store.state.flash.page)) {
+        return this.$store.state.flash.message;
+      }
+
+      return "";
     }
   },
   watch: {
-    loginStatus: function (success) {
+    loginStatus: function(success) {
       if (success) {
-        this.$router.go('./')
+        this.$router.go("./");
       }
     }
   }
-}
+};
 </script>
 
 <!-- Style -->
 <style>
+.flash {
+  background-color: #137aee;
+  color: white;
+  border-radius: 5px;
+}
 </style>

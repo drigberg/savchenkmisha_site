@@ -2,15 +2,15 @@ import axios from 'axios'
 
 export default {
   async loadData({ commit }) {
-    const [contact, projects, header] = await Promise.all([
+    const [contact, projects, banner] = await Promise.all([
       axios.get('/api/contact').then(({ data }) => data),
       axios.get('/api/projects').then(({ data }) => data),
-      axios.get('/api/header').then(({ data }) => data)
+      axios.get('/api/banner').then(({ data }) => data)
     ])
 
     commit('contact', contact)
     commit('projects', projects)
-    commit('header', header)
+    commit('banner', banner)
 
     commit('dataLoaded')
   },
@@ -23,16 +23,22 @@ export default {
         })
 
       if (!data.success) {
-        commit('loginFailure', {
-          message: data.message || 'Invalid username/password combo, brah'
+        commit('flashMessage', {
+          message: 'Invalid username/password combo, brah',
+          page: '*'
         })
         return
       }
 
       commit('loginSuccess')
+      commit('flashMessage', {
+        message: 'Welcome, site owner!',
+        page: '*'
+      })
     } catch (err) {
-      commit('loginFailure', {
-        message: 'Login failed due to a server err, yo'
+      commit('flashMessage', {
+        message: `Error logging in: ${err.message}`,
+        page: '*'
       })
     }
   },
@@ -40,27 +46,45 @@ export default {
     try {
       const { data } = await axios.post('/api/contact', payload)
       commit('contact', data)
-      console.log('updated contact!')
+      commit('flashMessage', {
+        message: 'Contact info updated!',
+        page: '*'
+      })
     } catch (err) {
-      console.log('error updating contact!', err.message)
+      commit('flashMessage', {
+        message: `Error updating contact info: ${err.message}`,
+        page: '*'
+      })
     }
   },
-  async updateHeader({ commit }, payload) {
+  async updateBanner({ commit }, payload) {
     try {
-      const { data } = await axios.post('/api/header', payload)
-      commit('header', data)
-      console.log('updated header!')
+      const { data } = await axios.post('/api/banner', payload)
+      commit('banner', data)
+      commit('flashMessage', {
+        message: 'Banner info updated!',
+        page: '*'
+      })
     } catch (err) {
-      console.log('error updating header!', err.message)
+      commit('flashMessage', {
+        message: `Error updating banner: ${err.message}`,
+        page: '*'
+      })
     }
   },
-  async updateCredentials(_ctx, payload) {
+  async updateCredentials({ commit }, payload) {
     try {
       await axios.post('/api/change_credentials', payload)
 
-      console.log('updated credentials!')
+      commit('flashMessage', {
+        message: 'Credentials updated!',
+        page: '*'
+      })
     } catch (err) {
-      console.log('error updating credentials!', err.message)
+      commit('flashMessage', {
+        message: `Error updating credentials: ${err.message}`,
+        page: '*'
+      })
     }
   }
 }

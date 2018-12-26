@@ -19,9 +19,7 @@ class Agent {
   }
 
   resetCredentials(credentials) {
-    this.credentials = credentials
-      ? credentials
-      : db.admin.createCredentials()
+    this.credentials = credentials || db.admin.resetCredentials()
   }
 
   async login() {
@@ -29,8 +27,7 @@ class Agent {
       .post('/api/login')
       .send(this.credentials)
 
-    expect(res.statusCode).to.equal(302)
-    expect(res.headers.location).to.equal('/')
+    expect(res.statusCode).to.equal(200)
   }
 }
 

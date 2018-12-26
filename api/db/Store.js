@@ -20,6 +20,11 @@ class Store {
     this.data = JSON.parse(fs.readFileSync(this.path))
   }
 
+  flush() {
+    this.data = {}
+    this.save()
+  }
+
   save() {
     fs.writeFileSync(this.path, JSON.stringify(this.data))
   }

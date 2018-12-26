@@ -13,8 +13,7 @@ class Admin {
   constructor(store) {
     this.store = store
     if (!this.store.data || !this.store.data.admin) {
-      const credentials = this.createCredentials()
-      console.log(chalk.cyan('Created default credentials. Change immediately!'), credentials)
+      this.resetCredentials()
     }
   }
 
@@ -70,6 +69,7 @@ class Admin {
   }
 
   checkUsername(username) {
+    console.log('matching username against', this.store.data.admin.username)
     return username === this.store.data.admin.username
   }
 
@@ -78,7 +78,7 @@ class Admin {
     return hash === this.store.data.admin.hash
   }
 
-  createCredentials() {
+  resetCredentials() {
     const username = crypto.randomBytes(6).toString('hex')
     const password = crypto.randomBytes(6).toString('hex')
     const salt = this.createSalt()
@@ -91,6 +91,8 @@ class Admin {
       salt,
       secret,
     })
+
+    console.log(chalk.cyan('Reset credentials. Change immediately!'), { username, password })
 
     return {
       username,

@@ -18,8 +18,9 @@ const server = require('../server')
 
 before(async () => {
   db.flush()
-  await server.start()
+  await server.start(5001)
 })
+
 after(async () => {
   await server.stop()
   db.flush()
