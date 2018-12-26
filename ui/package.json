@@ -10,7 +10,8 @@
     "unit": "cross-env BABEL_ENV=test karma start test/unit/karma.conf.js --single-run",
     "test": "npm run unit",
     "lint": "eslint --ext .js,.vue src test/unit --fix",
-    "build": "node build/build.js"
+    "build": "node build/build.js",
+    "build:dev": "nodemon --watch ./src build/build.js"
   },
   "dependencies": {
     "axios": "0.18.0",
@@ -18,7 +19,8 @@
     "pug-loader": "^2.4.0",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",
-    "vuex": "3.0.1"
+    "vuex": "3.0.1",
+    "webpack-cli": "^3.1.2"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",
@@ -62,6 +64,7 @@
     "karma-webpack": "^2.0.2",
     "mocha": "^5.2.0",
     "node-notifier": "^5.1.2",
+    "nodemon": "1.18.9",
     "optimize-css-assets-webpack-plugin": "^3.2.0",
     "ora": "^1.2.0",
     "phantomjs-prebuilt": "^2.1.14",

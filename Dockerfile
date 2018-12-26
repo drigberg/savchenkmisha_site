@@ -11,4 +11,4 @@ RUN npm install
 EXPOSE 5000
 EXPOSE 6379
 
-CMD ["npm", "run", "start:prod"]
+CMD ["npm", "run", "start:dev"]

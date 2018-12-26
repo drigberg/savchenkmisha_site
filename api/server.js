@@ -116,16 +116,16 @@ app.post('/api/change_credentials', authenticate, function (req, res) {
 
   if (req.body.new_password) {
     db.admin.updatePassword(req.body.new_password)
-    console.log`Updated password at ${new Date().toISOString()}! Logging out.`)
+    console.log(`Updated password at ${new Date().toISOString()}! Logging out.`)
   }
 
-if (req.body.new_username) {
-  db.admin.updateUsername(req.body.new_username)
-  console.log(`Updated username at ${new Date().toISOString()}! Logging out.`)
-}
+  if (req.body.new_username) {
+    db.admin.updateUsername(req.body.new_username)
+    console.log(`Updated username at ${new Date().toISOString()}! Logging out.`)
+  }
 
-req.logout()
-res.json({ ok: 'ok' })
+  req.logout()
+  res.json({ ok: 'ok' })
 })
 
 app.get('/api/about', function (req, res) {
