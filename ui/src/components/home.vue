@@ -1,8 +1,19 @@
 <!-- Template -->
 <template>
   <div class="hello">
-    <h1>{{ title }}</h1>
-    <h3>{{ subtitle }}</h3>
+    <h1>{{ header.title }}</h1>
+    <h3>{{ header.subtitle }}</h3>
+    <form @submit.prevent="update" v-if="$store.state.loggedIn">
+      <div>
+        <label for="title">Title</label>
+        <input v-model="header.title" name="title" type="text">
+      </div>
+      <div>
+        <label for="subtitle">Subtitle</label>
+        <input v-model="header.subtitle" name="subtitle" type="text">
+      </div>
+      <button type="submit">Update</button>
+    </form>
     <div class="container">
       <projects></projects>
       <contact></contact>
@@ -24,6 +35,11 @@ export default {
     contact,
     projects
   },
+  computed: {
+    headerFromStore() {
+      return JSON.stringify(this.$store.state.header);
+    }
+  },
   created() {
     if (!this.$store.state.loaded) {
       this.$store.dispatch("loadData");
@@ -31,9 +47,21 @@ export default {
   },
   data() {
     return {
-      title: "MISHA SAVCHENKO",
-      subtitle: "Engineer, Grizzly Bear, Proud Father"
+      header: {
+        title: this.$store.state.header.title,
+        subtitle: this.$store.state.header.subtitle
+      }
     };
+  },
+  methods: {
+    update: function() {
+      this.$store.dispatch("updateHeader", this.header);
+    }
+  },
+  watch: {
+    headerFromStore: function(data) {
+      this.header = JSON.parse(data);
+    }
   }
 };
 </script>

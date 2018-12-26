@@ -2,10 +2,16 @@ import axios from 'axios'
 
 export default {
   async loadData({ commit }) {
-    const [contact, projects] = await Promise.all([axios.get('/api/contact').then(({ data }) => data), axios.get('/api/projects').then(({ data }) => data)])
+    const [contact, projects, header] = await Promise.all([
+      axios.get('/api/contact').then(({ data }) => data),
+      axios.get('/api/projects').then(({ data }) => data),
+      axios.get('/api/header').then(({ data }) => data)
+    ])
 
     commit('contact', contact)
     commit('projects', projects)
+    commit('header', header)
+
     commit('dataLoaded')
   },
   async login({ commit }, { username, password }) {
@@ -37,6 +43,15 @@ export default {
       console.log('updated contact!')
     } catch (err) {
       console.log('error updating contact!', err.message)
+    }
+  },
+  async updateHeader({ commit }, payload) {
+    try {
+      const { data } = await axios.post('/api/header', payload)
+      commit('header', data)
+      console.log('updated header!')
+    } catch (err) {
+      console.log('error updating header!', err.message)
     }
   },
   async updateCredentials(_ctx, payload) {

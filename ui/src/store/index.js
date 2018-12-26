@@ -3,7 +3,6 @@ import Vuex from 'vuex'
 import axios from 'axios'
 import actions from './actions'
 import mutations from './mutations'
-import getters from './getters'
 
 Vue.use(Vuex)
 
@@ -15,6 +14,7 @@ axios.defaults.headers.common['csrf'] = csrfElement ? csrfElement.content : null
 export const store = new Vuex.Store({
   state: {
     contact: {},
+    header: {},
     projects: [],
     loaded: false,
     loggedIn: loginElement ? loginElement.content : false,
@@ -23,7 +23,6 @@ export const store = new Vuex.Store({
       message: ''
     }
   },
-  getters,
   actions,
   mutations
 })

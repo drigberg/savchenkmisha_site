@@ -29,50 +29,50 @@
 <!-- Script -->
 
 <script>
-import axios from "axios";
-import { store } from "../store";
+import axios from 'axios'
+import { store } from '../store'
 
 export default {
-  name: "Admin",
+  name: 'Admin',
   store,
   data() {
     return {
       credentials: {
-        current_username: "",
-        current_password: "",
-        new_username: "",
-        new_password: ""
+        current_username: '',
+        current_password: '',
+        new_username: '',
+        new_password: ''
       }
-    };
+    }
   },
   methods: {
     logout: function() {
-      const vm = this;
-      localStorage.removeItem("mishasite-user-token");
+      const vm = this
+      localStorage.removeItem('mishasite-user-token')
 
-      axios.get("/api/logout").then(response => {
-        vm.$router.go("/");
-      });
+      axios.get('/api/logout').then(response => {
+        vm.$router.go('/')
+      })
     },
     updateCredentials: function() {
       if (
         !this.credentials.current_username ||
         !this.credentials.current_password
       ) {
-        console.log("need current username and password!");
-        return;
+        console.log('need current username and password!')
+        return
       }
 
       if (!this.credentials.new_username && !this.credentials.new_password) {
-        console.log("nothing to update!");
-        return;
+        console.log('nothing to update!')
+        return
       }
 
-      this.$store.dispatch("updateCredentials", this.credentials);
-      this.logout();
+      this.$store.dispatch('updateCredentials', this.credentials)
+      this.logout()
     }
   }
-};
+}
 </script>
 
 <!-- Style -->

@@ -14,6 +14,9 @@ export default {
   contact(state, data) {
     state.contact = data
   },
+  header(state, data) {
+    state.header = data
+  },
   projects(state, data) {
     state.projects = data
   }

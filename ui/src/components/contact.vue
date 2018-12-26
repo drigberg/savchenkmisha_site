@@ -17,7 +17,6 @@
     </p>
 
     <form @submit.prevent="update" v-if="$store.state.loggedIn">
-      <h1>UPDATE CONTACT</h1>
       <div>
         <label for="email">Email</label>
         <input v-model="contact.email" name="email" type="text">
