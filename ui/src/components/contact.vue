@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <div id="contact">
+    <p class="flash" v-if="$store.state.loggedIn && flashMessage">{{ flashMessage }}</p>
     <div>
       <p>
         <strong>email:</strong>
@@ -40,6 +41,18 @@ import { store } from "../store";
 export default {
   name: "Contact",
   store,
+  computed: {
+    contactFromStore() {
+      return JSON.stringify(this.$store.state.contact);
+    },
+    flashMessage() {
+      if (["contact", "*"].includes(this.$store.state.flash.page)) {
+        return this.$store.state.flash.message;
+      }
+
+      return "";
+    }
+  },
   data() {
     return {
       contact: {
@@ -48,11 +61,6 @@ export default {
         linkedin: this.$store.state.contact.linkedin
       }
     };
-  },
-  computed: {
-    contactFromStore() {
-      return JSON.stringify(this.$store.state.contact);
-    }
   },
   methods: {
     update: function() {
@@ -68,4 +76,7 @@ export default {
 </script>
 
 <style>
+#contact {
+  margin: 20px auto;
+}
 </style>

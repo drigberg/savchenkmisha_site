@@ -11,7 +11,6 @@ export default {
     commit('contact', contact)
     commit('projects', projects)
     commit('banner', banner)
-
     commit('dataLoaded')
   },
   async login({ commit }, { username, password }) {
@@ -25,7 +24,7 @@ export default {
       if (!data.success) {
         commit('flashMessage', {
           message: 'Invalid username/password combo, brah',
-          page: '*'
+          page: 'login'
         })
         return
       }
@@ -38,7 +37,7 @@ export default {
     } catch (err) {
       commit('flashMessage', {
         message: `Error logging in: ${err.message}`,
-        page: '*'
+        page: 'login'
       })
     }
   },
@@ -48,12 +47,12 @@ export default {
       commit('contact', data)
       commit('flashMessage', {
         message: 'Contact info updated!',
-        page: '*'
+        page: 'contact'
       })
     } catch (err) {
       commit('flashMessage', {
         message: `Error updating contact info: ${err.message}`,
-        page: '*'
+        page: 'contact'
       })
     }
   },
@@ -63,12 +62,12 @@ export default {
       commit('banner', data)
       commit('flashMessage', {
         message: 'Banner info updated!',
-        page: '*'
+        page: 'banner'
       })
     } catch (err) {
       commit('flashMessage', {
         message: `Error updating banner: ${err.message}`,
-        page: '*'
+        page: 'banner'
       })
     }
   },
@@ -78,12 +77,12 @@ export default {
 
       commit('flashMessage', {
         message: 'Credentials updated!',
-        page: '*'
+        page: 'admin'
       })
     } catch (err) {
       commit('flashMessage', {
         message: `Error updating credentials: ${err.message}`,
-        page: '*'
+        page: 'admin'
       })
     }
   }

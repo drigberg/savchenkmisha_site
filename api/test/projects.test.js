@@ -6,14 +6,13 @@
 const { expect } = require('chai')
 const faker = require('faker')
 const db = require('../db')
-
-const Agent = require('./Agent')
+const Agent = require('./helpers/Agent')
 
 /**
  * Module
  */
 
-describe.skip('projects', () => {
+describe.skip('Projects', () => {
   before(async () => {
     db.projects.removeAll()
     this.unauthenticated = new Agent()

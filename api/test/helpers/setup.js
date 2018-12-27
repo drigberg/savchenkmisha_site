@@ -9,8 +9,8 @@ const {
   after,
 } = require('mocha')
 
-const db = require('../db')
-const server = require('../server')
+const db = require('../../db')
+const server = require('../../server')
 
 /**
  * Module

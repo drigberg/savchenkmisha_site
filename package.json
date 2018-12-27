@@ -13,7 +13,7 @@
     "postinstall": "cd ui && npm install",
     "api:start": "NODE_ENV=production node api/start.js",
     "api:start:dev": "NODE_ENV=production nodemon --watch ./api api/start.js",
-    "api:test": "NODE_ENV=test mocha api/test/setup.js api/test/*.test.js",
+    "api:test": "NODE_ENV=test mocha --timeout=10000 --exit api/test/helpers/setup.js api/test/*.test.js",
     "seed-db": "node api/db/seed",
     "lint": "eslint ./api --fix && cd ui && npm run lint"
   },

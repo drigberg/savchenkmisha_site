@@ -3,16 +3,17 @@
  */
 
 const db = require('./index')
+const log = require('../log')
 
 /**
  * Module
  */
 
 
-console.log('Removing projects...')
+log('Removing projects...', { color: 'yellow' })
 db.projects.removeAll()
 
-console.log('Inserting projects...')
+log('Inserting projects...', { color: 'yellow' })
 db.projects.insert({
   title: 'robocop',
   description: 'Bears are on every continent mostly',
@@ -40,8 +41,7 @@ db.projects.insert({
   ]
 })
 
-console.log('Updating text...')
-
+log('Updating text...', { color: 'yellow' })
 db.contact.update({
   email: 'someone@somewhere.com',
   github: 'https://github.com/minecrafter69',
@@ -55,4 +55,4 @@ db.banner.update({
   bio: 'Hiya! My name is Misha, and I am an engineer. That\'s right, I build things! Crazy, right? Right! This site was built by my friends, so if you hate it, hate them! I do! Join me!',
 })
 
-console.log('Done seeding db!')
+log('Done seeding db!', { color: 'green' })

@@ -36,7 +36,8 @@ class Contact {
   }
 
   update(payload) {
-    this.store.data.contact = this.prepareData(payload)
+    const data = this.prepareData(payload)
+    this.store.data.contact = data
     this.store.save()
 
     return this.store.data.contact

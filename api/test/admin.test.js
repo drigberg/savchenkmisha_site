@@ -5,63 +5,102 @@
 
 const { expect } = require('chai')
 const faker = require('faker')
-const Agent = require('./Agent')
+const Agent = require('./helpers/Agent')
 const db = require('../db')
 
 /**
  * Module
  */
 
-describe('admin', () => {
+const csrfRe = /^.*<meta content="(.*)" name="csrf"\/>.*/
+
+describe('Admin', () => {
   describe('login', () => {
-    it('correct credentials', async () => {
-      const agent = new Agent()
-      const res = await agent.agent
-        .post('/api/login')
-        .send(agent.credentials)
-
-      expect(res.statusCode).to.equal(200)
-      expect(res.body.success).to.equal(true)
+    before(() => {
+      this.agent = new Agent()
     })
 
-    it('invalid username', async () => {
-      const agent = new Agent()
-      const res = await agent.agent
-        .post('/api/login')
-        .send({
-          username: 'wrong',
-          password: agent.credentials.password,
-        })
-
-      expect(res.statusCode).to.equal(401)
+    beforeEach(async () => {
+      await this.agent.agent
+        .get('/api/logout')
     })
 
-    it('invalid password', async () => {
-      const agent = new Agent()
-      const res = await agent.agent
-        .post('/api/login')
-        .send({
-          username: agent.credentials.username,
-          password: 'wrong',
-        })
+    describe('success', () => {
+      it('correct credentials', async () => {
+        const res = await this.agent.agent
+          .post('/api/login')
+          .send(this.agent.credentials)
 
-      expect(res.statusCode).to.equal(401)
+        expect(res.statusCode).to.equal(200)
+        expect(res.body.success).to.equal(true)
+      })
+
+      it('injects csrf into html', async () => {
+        await this.agent.agent
+          .post('/api/login')
+          .send(this.agent.credentials)
+
+        const res = await this.agent.agent.get('/')
+
+        expect(res.statusCode).to.equal(200)
+        const match = csrfRe.exec(res.text)
+        expect(match[1]).to.have.length(128)
+      })
     })
 
-    it('invalid username and password', async () => {
-      const agent = new Agent()
-      const res = await agent.agent
-        .post('/api/login')
-        .send({
-          username: 'wrong',
-          password: 'wrong',
-        })
+    describe('error', () => {
+      it('invalid username', async () => {
+        const res = await this.agent.agent
+          .post('/api/login')
+          .send({
+            username: 'wrong',
+            password: this.agent.credentials.password,
+          })
 
-      expect(res.statusCode).to.equal(401)
+        expect(res.statusCode).to.equal(401)
+      })
+
+      it('invalid password', async () => {
+        const res = await this.agent.agent
+          .post('/api/login')
+          .send({
+            username: this.agent.credentials.username,
+            password: 'wrong',
+          })
+
+        expect(res.statusCode).to.equal(401)
+      })
+
+      it('invalid username and password', async () => {
+        const res = await this.agent.agent
+          .post('/api/login')
+          .send({
+            username: 'wrong',
+            password: 'wrong',
+          })
+
+        expect(res.statusCode).to.equal(401)
+      })
     })
   })
 
   describe('logout', () => {
+    it('no valid session after logout', async () => {
+      const agent = new Agent()
+      await agent.agent
+        .post('/api/login')
+        .send(agent.credentials)
+
+      await agent.agent
+        .get('/api/logout')
+
+      const res = await agent.agent
+        .post('/api/contact')
+        .send({})
+
+      expect(res.statusCode).to.equal(401)
+    })
+
     it('logged in', async () => {
       const agent = new Agent()
       await agent.agent
@@ -86,7 +125,7 @@ describe('admin', () => {
     })
   })
 
-  describe.skip('change credentials', () => {
+  describe('change credentials', () => {
     describe('success', () => {
       it('change password', async () => {
         const agent = new Agent()
@@ -97,6 +136,7 @@ describe('admin', () => {
 
         const res = await agent.agent
           .post('/api/change_credentials')
+          .set('csrf', agent.csrf)
           .send({
             current_password: credentials.password,
             current_username: credentials.username,
@@ -120,6 +160,7 @@ describe('admin', () => {
 
         const res = await agent.agent
           .post('/api/change_credentials')
+          .set('csrf', agent.csrf)
           .send({
             current_password: credentials.password,
             current_username: credentials.username,
@@ -144,6 +185,7 @@ describe('admin', () => {
 
         const res = await agent.agent
           .post('/api/change_credentials')
+          .set('csrf', agent.csrf)
           .send({
             current_password: credentials.password,
             current_username: credentials.username,
@@ -170,6 +212,7 @@ describe('admin', () => {
 
         const res = await agent.agent
           .post('/api/change_credentials')
+          .set('csrf', agent.csrf)
           .send({
             current_password: 'invalid',
             current_username: credentials.username,
@@ -179,8 +222,8 @@ describe('admin', () => {
         expect(res.statusCode).to.equal(400)
         expect(res.text).to.equal('incorrect credentials')
 
-        const updated = db.admin.getCredentials()
-        expect(updated.username).equal(credentials.username)
+        const actual = db.admin.getCredentials()
+        expect(actual.username).equal(credentials.username)
         expect(db.admin.checkPassword(credentials.password)).to.equal(true)
       })
 
@@ -193,6 +236,7 @@ describe('admin', () => {
 
         const res = await agent.agent
           .post('/api/change_credentials')
+          .set('csrf', agent.csrf)
           .send({
             current_password: credentials.password,
             current_username: 'invalid',
@@ -202,8 +246,61 @@ describe('admin', () => {
         expect(res.statusCode).to.equal(400)
         expect(res.text).to.equal('incorrect credentials')
 
-        const updated = db.admin.getCredentials()
-        expect(updated.username).equal(credentials.username)
+        const actual = db.admin.getCredentials()
+        expect(actual.username).equal(credentials.username)
+        expect(db.admin.checkPassword(credentials.password)).to.equal(true)
+      })
+
+      it('missing csrf', async () => {
+        const agent = new Agent()
+        await agent.login()
+
+        const new_password = faker.random.alphaNumeric(15)
+        const new_username = faker.random.alphaNumeric(15)
+        const credentials = agent.credentials
+
+        const res = await agent.agent
+          .post('/api/change_credentials')
+          .send({
+            current_password: credentials.password,
+            current_username: credentials.username,
+            new_password,
+            new_username,
+          })
+
+        expect(res.statusCode).to.equal(401)
+        expect(res.text).to.equal('Not authenticated')
+
+        const actual = db.admin.getCredentials()
+        expect(actual.username).equal(credentials.username)
+        expect(db.admin.checkPassword(new_password)).to.equal(false)
+        expect(db.admin.checkPassword(credentials.password)).to.equal(true)
+      })
+
+      it('invalid csrf', async () => {
+        const agent = new Agent()
+        await agent.login()
+
+        const new_password = faker.random.alphaNumeric(15)
+        const new_username = faker.random.alphaNumeric(15)
+        const credentials = agent.credentials
+
+        const res = await agent.agent
+          .post('/api/change_credentials')
+          .set('csrf', faker.random.alphaNumeric(10))
+          .send({
+            current_password: credentials.password,
+            current_username: credentials.username,
+            new_password,
+            new_username,
+          })
+
+        expect(res.statusCode).to.equal(401)
+        expect(res.text).to.equal('Not authenticated')
+
+        const actual = db.admin.getCredentials()
+        expect(actual.username).equal(credentials.username)
+        expect(db.admin.checkPassword(new_password)).to.equal(false)
         expect(db.admin.checkPassword(credentials.password)).to.equal(true)
       })
 
@@ -220,11 +317,11 @@ describe('admin', () => {
             new_password,
           })
 
-        expect(res.statusCode).to.equal(400)
-        expect(res.text).to.equal('incorrect credentials')
+        expect(res.statusCode).to.equal(401)
+        expect(res.text).to.equal('Not authenticated')
 
-        const updated = db.admin.getCredentials()
-        expect(updated.username).equal(credentials.username)
+        const actual = db.admin.getCredentials()
+        expect(actual.username).equal(credentials.username)
         expect(db.admin.checkPassword(new_password)).to.equal(false)
         expect(db.admin.checkPassword(credentials.password)).to.equal(true)
       })

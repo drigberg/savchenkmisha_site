@@ -90,6 +90,8 @@ export default {
   background-color: #137aee;
   color: white;
   border-radius: 5px;
+  width: 40%;
+  margin: 0px auto;
 }
 
 div > form {

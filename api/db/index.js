@@ -27,6 +27,8 @@ module.exports = {
   admin: new Admin(store),
   banner: new Banner(store),
   contact: new Contact(store),
-  flush: store.flush,
+  flush: function () {
+    store.flush()
+  },
   projects: new Projects(store),
 }

@@ -2,7 +2,7 @@
  * Module dependencies
  */
 
-const chalk = require('chalk')
+const log = require('../log')
 const crypto = require('crypto')
 
 /**
@@ -42,7 +42,7 @@ class Admin {
       username
     })
 
-    console.log(chalk.green('Updated username'))
+    log('Updated username', { color: 'green' })
   }
 
   updatePassword(password) {
@@ -54,7 +54,7 @@ class Admin {
       salt,
     })
 
-    console.log(chalk.green('Updated password'))
+    log('Updated password', { color: 'green' })
   }
 
   checkCredentials(username, password) {
@@ -69,7 +69,6 @@ class Admin {
   }
 
   checkUsername(username) {
-    console.log('matching username against', this.store.data.admin.username)
     return username === this.store.data.admin.username
   }
 
@@ -92,7 +91,13 @@ class Admin {
       secret,
     })
 
-    console.log(chalk.cyan('Reset credentials. Change immediately!'), { username, password })
+    log('Reset credentials. Change immediately!', {
+      color: 'cyan',
+      data: {
+        username,
+        password
+      }
+    })
 
     return {
       username,

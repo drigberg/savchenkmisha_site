@@ -13,6 +13,7 @@ const RedisStore = require('connect-redis')(expressSession)
 const db = require('./db')
 const cache = require('./cache')
 const crypto = require('crypto')
+const log = require('./log')
 
 /**
  * Module variables
@@ -48,11 +49,11 @@ app.use(passport.session())
 
 passport.use(new LocalStrategy(function (username, password, done) {
   if (!db.admin.checkCredentials(username, password)) {
-    console.log(`Failed login at ${new Date().toISOString()}`)
+    log(`Failed login at ${new Date().toISOString()}`, { color: 'magenta' })
     return done()
   }
 
-  console.log(`Successful login at ${new Date().toISOString()}`)
+  log(`Successful login at ${new Date().toISOString()}`)
 
   return done(null, {
     admin: true
@@ -70,17 +71,20 @@ passport.deserializeUser(function (id, done) {
 })
 
 function authenticate(req, res, next) {
-  console.log('AUTHENTICATION:', {
-    authenticated: req.isAuthenticated(),
-    session: req.session,
-    csrf: req.headers.csrf
+  const validCsrf = req.headers.csrf && req.session && req.headers.csrf === req.session.csrf
+
+  log('Authenticating:', {
+    color: 'yellow',
+    data: {
+      authenticated: req.isAuthenticated(),
+      validCsrf
+    }
   })
 
-  //  && req.headers.csrf && req.headers.csrf === req.session.csrf
-  if (req.isAuthenticated()) {
+  if (req.isAuthenticated() && validCsrf) {
     next()
   } else {
-    res.status(500).send('Not authenticated')
+    res.status(401).send('Not authenticated')
   }
 }
 
@@ -106,12 +110,12 @@ app.get('/', function (req, res) {
 })
 
 app.post('/api/login', passport.authenticate('local'), (req, res) => {
-  req.session.csrf = crypto.randomBytes(256).toString('hex')
+  req.session.csrf = crypto.randomBytes(64).toString('hex')
   res.json({ success: true })
 })
 
 app.get('/api/logout', function (req, res) {
-  console.log(`Logout at ${new Date().toISOString()}`)
+  log(`Logout at ${new Date().toISOString()}`)
   db.admin.refreshSecret()
 
   logout(req)
@@ -120,7 +124,7 @@ app.get('/api/logout', function (req, res) {
 })
 
 app.post('/api/reset_credentials', function (req, res) {
-  console.log(`Reset credentials at ${new Date().toISOString()}`)
+  log(`Reset credentials at ${new Date().toISOString()}`)
 
   if (!db.admin.checkUsername(req.body.username)) {
     res.status(400).send('no such user')
@@ -142,12 +146,12 @@ app.post('/api/change_credentials', authenticate, function (req, res) {
 
   if (req.body.new_password) {
     db.admin.updatePassword(req.body.new_password)
-    console.log(`Updated password at ${new Date().toISOString()}! Logging out.`)
+    log(`Updated password at ${new Date().toISOString()}! Logging out.`)
   }
 
   if (req.body.new_username) {
     db.admin.updateUsername(req.body.new_username)
-    console.log(`Updated username at ${new Date().toISOString()}! Logging out.`)
+    log(`Updated username at ${new Date().toISOString()}! Logging out.`)
   }
 
   req.logout()
@@ -171,35 +175,35 @@ app.get('/api/projects', function (req, res) {
 
 app.post('/api/contact', authenticate, function (req, res) {
   const contact = db.contact.update(req.body)
-  console.log(`Updated contact at ${new Date().toISOString()}:`, contact)
+  log(`Updated contact at ${new Date().toISOString()}:`, { data: contact })
 
   res.json(contact)
 })
 
 app.post('/api/banner', authenticate, function (req, res) {
   const banner = db.banner.update(req.body)
-  console.log(`Updated banner at ${new Date().toISOString()}:`, banner)
+  log(`Updated banner at ${new Date().toISOString()}:`, { data: banner })
 
   res.json(banner)
 })
 
 app.post('/api/projects', authenticate, function (req, res) {
   const project = db.projects.insert(req.body)
-  console.log(`Inserted project at ${new Date().toISOString()}:`, project)
+  log(`Inserted project at ${new Date().toISOString()}:`, { data: project })
 
   res.json(project)
 })
 
 app.post('/api/projects/:id', authenticate, function (req, res) {
   const project = db.projects.update(req.params.id, req.body)
-  console.log(`Updated project at ${new Date().toISOString()}:`, project)
+  log(`Updated project at ${new Date().toISOString()}:`, { data: project })
 
   res.json(project)
 })
 
 app.delete('/api/projects/:id', authenticate, function (req, res) {
   db.projects.remove(req.params.id)
-  console.log(`Removed project ${req.params.id} at ${new Date().toISOString()}`)
+  log(`Removed project ${req.params.id} at ${new Date().toISOString()}`)
 
   res.json({ ok: 'ok' })
 })
@@ -210,6 +214,7 @@ app.get('*', (req, res) => {
 
 class Server {
   start(port) {
+    log('Starting server...')
     const that = this
     return new Promise(function (resolve, reject) {
       that.server = app.listen(port, function (err) {
@@ -221,16 +226,18 @@ class Server {
       })
     })
       .then(() => {
-        console.log(`Server is running on port ${port}`)
+        log(`Server is running on port ${port}`)
       })
       .catch((err) => {
-        console.log('Error starting server', err)
+        log('Error starting server', { data: err })
       })
   }
 
   stop() {
-    console.log('Stopping server!')
-    this.server.close()
+    log('Stopping server!')
+    return new Promise((resolve) => {
+      this.server.close(() => resolve())
+    })
   }
 }
 
