@@ -5,6 +5,7 @@
 
 const bodyParser = require('body-parser')
 const express = require('express')
+const { reduce } = require('lodash')
 const LocalStrategy = require('passport-local')
 const passport = require('passport')
 const path = require('path')
@@ -69,6 +70,35 @@ passport.deserializeUser(function (id, done) {
     admin: true
   })
 })
+
+const illegal = /[%^&*(){}|<>+]/i
+
+function sanitize(req, res, next) {
+  if (Object.keys(req.params).length) {
+    next(new Error('This application doesn\'t use querystrings.'))
+    return
+  }
+
+  if (req.body && typeof req.body !== 'object') {
+    next(new Error('Request body must be an object.'))
+    return
+  }
+
+  const bodyErrors = reduce(req.body, (acc, value, key) => {
+    if (illegal.test(value)) {
+      return [...acc, key]
+    }
+
+    return acc
+  }, [])
+
+  if (bodyErrors.length) {
+    next(new Error(`At least one request body property is malformed: ${bodyErrors.sort().join(', ')}`))
+    return
+  }
+
+  next()
+}
 
 function authenticate(req, res, next) {
   const validCsrf = req.headers.csrf && req.session && req.headers.csrf === req.session.csrf
@@ -173,14 +203,14 @@ app.get('/api/projects', function (req, res) {
   res.json(projects)
 })
 
-app.post('/api/contact', authenticate, function (req, res) {
+app.post('/api/contact', authenticate, sanitize, function (req, res) {
   const contact = db.contact.update(req.body)
   log(`Updated contact at ${new Date().toISOString()}:`, { data: contact })
 
   res.json(contact)
 })
 
-app.post('/api/banner', authenticate, function (req, res) {
+app.post('/api/banner', authenticate, sanitize, function (req, res) {
   const banner = db.banner.update(req.body)
   log(`Updated banner at ${new Date().toISOString()}:`, { data: banner })
 
@@ -210,6 +240,12 @@ app.delete('/api/projects/:id', authenticate, function (req, res) {
 
 app.get('*', (req, res) => {
   res.redirect('/')
+})
+
+app.use(function (err, req, res, next) {
+  res.status(400).json({
+    message: err.message,
+  })
 })
 
 class Server {
