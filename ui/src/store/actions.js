@@ -13,6 +13,29 @@ export default {
     commit('banner', banner)
     commit('dataLoaded')
   },
+  async resetPassword({ commit }, { username }) {
+    try {
+      const { data } = await axios
+        .post('/api/reset_credentials', {
+          username
+        })
+
+      if (!data.success) {
+        commit('flashMessage', {
+          message: 'Invalid username/password combo, brah',
+          page: 'login'
+        })
+        return
+      }
+
+      commit('flashMessage', {
+        message: 'Credentials reset! You should get an email with your new password.',
+        page: 'login'
+      })
+    } catch (err) {
+
+    }
+  },
   async login({ commit }, { username, password }) {
     try {
       const { data } = await axios
