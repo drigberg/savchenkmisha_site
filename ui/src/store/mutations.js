@@ -29,6 +29,11 @@ export default {
   },
   loginSuccess(state) {
     state.loggedIn = true
+    state.logout = false
+  },
+  logout(state) {
+    state.loggedIn = false
+    state.logout = Math.random()
   },
   projects(state, data) {
     state.projects = data

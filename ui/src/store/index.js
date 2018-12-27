@@ -21,6 +21,7 @@ export const store = new Vuex.Store({
     },
     loaded: false,
     loggedIn: loginElement ? loginElement.content : false,
+    logout: false,
     projects: []
   },
   actions,

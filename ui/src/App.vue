@@ -5,14 +5,30 @@
 </template>
 
 <script>
+import axios from "axios";
+import { store } from "./store";
+
 export default {
-  name: 'App'
-}
+  name: "App",
+  store,
+  computed: {
+    toLogout() {
+      return this.$store.state.logout;
+    }
+  },
+  watch: {
+    toLogout: function(logout) {
+      if (logout) {
+        this.$store.dispatch("logout");
+      }
+    }
+  }
+};
 </script>
 
 <style>
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: "Avenir", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;

@@ -58,12 +58,7 @@ export default {
   },
   methods: {
     logout: function() {
-      const vm = this;
-      localStorage.removeItem("mishasite-user-token");
-
-      axios.get("/api/logout").then(response => {
-        vm.$router.go("/");
-      });
+      this.$store.dispatch("logout");
     },
     updateCredentials: function() {
       if (
@@ -78,7 +73,6 @@ export default {
       }
 
       this.$store.dispatch("updateCredentials", this.credentials);
-      this.logout();
     }
   }
 };

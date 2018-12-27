@@ -1,4 +1,9 @@
 import axios from 'axios'
+import router from '../router'
+
+function getMessageFromError(err) {
+  return err && err.response && err.response.data && err.response.data.message
+}
 
 export default {
   async loadData({ commit }) {
@@ -33,7 +38,11 @@ export default {
         page: 'login'
       })
     } catch (err) {
-
+      const message = getMessageFromError(err) || err.message
+      commit('flashMessage', {
+        message: `Error resetting password: ${message}`,
+        page: 'login'
+      })
     }
   },
   async login({ commit }, { username, password }) {
@@ -58,8 +67,10 @@ export default {
         page: '*'
       })
     } catch (err) {
+      const message = getMessageFromError(err) || err.message
+
       commit('flashMessage', {
-        message: `Error logging in: ${err.message}`,
+        message: `Error logging in: ${message}`,
         page: 'login'
       })
     }
@@ -73,9 +84,24 @@ export default {
         page: 'contact'
       })
     } catch (err) {
+      const message = getMessageFromError(err) || err.message
+
       commit('flashMessage', {
-        message: `Error updating contact info: ${err.message}`,
+        message: `Error updating contact info: ${message}`,
         page: 'contact'
+      })
+    }
+  },
+  async logout({ commit }) {
+    try {
+      await axios.get('/api/logout')
+      router.push('/')
+    } catch (err) {
+      const message = getMessageFromError(err) || err.message
+
+      commit('flashMessage', {
+        message: `Unable to logout! ${message}`,
+        page: 'banner'
       })
     }
   },
@@ -88,8 +114,10 @@ export default {
         page: 'banner'
       })
     } catch (err) {
+      const message = getMessageFromError(err) || err.message
+
       commit('flashMessage', {
-        message: `Error updating banner: ${err.message}`,
+        message: `Error updating banner info: ${message}`,
         page: 'banner'
       })
     }
@@ -102,9 +130,13 @@ export default {
         message: 'Credentials updated!',
         page: 'admin'
       })
+
+      commit('logout')
     } catch (err) {
+      const message = getMessageFromError(err) || err.message
+
       commit('flashMessage', {
-        message: `Error updating credentials: ${err.message}`,
+        message: `Error updating credentials: ${message}`,
         page: 'admin'
       })
     }
