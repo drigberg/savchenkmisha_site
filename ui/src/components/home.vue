@@ -1,6 +1,7 @@
 <!-- Template -->
 <template>
   <div>
+    <router-link v-if="$store.state.loggedIn" to="/admin">Admin</router-link>
     <banner></banner>
     <div class="container">
       <projects></projects>
