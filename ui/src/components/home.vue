@@ -14,7 +14,7 @@
 
 <script>
 import { store } from "../store";
-import projects from "./projects";
+import projects from "./projects/index";
 import contact from "./contact";
 import banner from "./banner";
 
@@ -117,5 +117,13 @@ i h2 {
 
 .circle:hover {
   opacity: 1;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }
 </style>

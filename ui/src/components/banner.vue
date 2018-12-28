@@ -51,12 +51,12 @@ export default {
     };
   },
   methods: {
-    update: function() {
+    update() {
       this.$store.dispatch("updateBanner", this.banner);
     }
   },
   watch: {
-    bannerFromStore: function(data) {
+    bannerFromStore(data) {
       this.banner = JSON.parse(data);
     }
   }

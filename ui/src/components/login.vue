@@ -36,7 +36,7 @@ export default {
     };
   },
   methods: {
-    login: function() {
+    login() {
       const vm = this;
 
       this.$store.dispatch("login", {
@@ -44,7 +44,7 @@ export default {
         password: vm.password
       });
     },
-    resetPassword: function() {
+    resetPassword() {
       const vm = this;
 
       this.$store.dispatch("resetPassword", {
@@ -53,22 +53,12 @@ export default {
     }
   },
   computed: {
-    loginStatus() {
-      return this.$store.state.loggedIn;
-    },
     flashMessage() {
       if (["login", "*"].includes(this.$store.state.flash.page)) {
         return this.$store.state.flash.message;
       }
 
       return "";
-    }
-  },
-  watch: {
-    loginStatus: function(success) {
-      if (success) {
-        this.$router.go("./");
-      }
     }
   }
 };

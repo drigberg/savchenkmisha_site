@@ -35,5 +35,8 @@ export default {
   },
   projects(state, data) {
     state.projects = data
+  },
+  setActiveProject(state, index) {
+    state.activeProject = index
   }
 }

@@ -64,8 +64,10 @@ async function login({ commit }, { username, password }) {
     commit('loginSuccess')
     commit('flashMessage', {
       message: 'Welcome, site owner!',
-      page: '*'
+      page: 'admin'
     })
+
+    router.push('/admin')
   } catch (err) {
     const message = getMessageFromError(err) || err.message
 
@@ -148,12 +150,17 @@ async function updateCredentials({ commit }, payload) {
   }
 }
 
+async function setActiveProject({ commit }, index) {
+  commit('setActiveProject', index)
+}
+
 export default {
   loadData,
-  resetPassword,
   login,
-  updateContact,
   logout,
+  resetPassword,
+  setActiveProject,
+  updateContact,
   updateBanner,
   updateCredentials
 }
