@@ -1,0 +1,12 @@
+html
+  head
+    meta(charset="utf-8")
+    if csrf
+      meta(content=csrf name="csrf")
+    if loggedIn
+      meta(content=loggedIn name="loggedIn")
+    meta(name="viewport" content="width=device-width,initial-scale=1.0")
+    title misha_site
+  body
+    div(id="app")
+      //- built files will be auto injected
