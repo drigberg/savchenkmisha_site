@@ -95,6 +95,8 @@ export default {
   async logout({ commit }) {
     try {
       await axios.get('/api/logout')
+      commit('logoutSuccess')
+
       router.push('/')
     } catch (err) {
       const message = getMessageFromError(err) || err.message
