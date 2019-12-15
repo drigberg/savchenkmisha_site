@@ -57,10 +57,10 @@ export default {
     };
   },
   methods: {
-    logout: function() {
+    logout() {
       this.$store.dispatch("logout");
     },
-    updateCredentials: function() {
+    updateCredentials() {
       if (
         !this.credentials.current_username ||
         !this.credentials.current_password

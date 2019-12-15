@@ -63,12 +63,12 @@ export default {
     };
   },
   methods: {
-    update: function() {
+    update() {
       this.$store.dispatch("updateContact", this.contact);
     }
   },
   watch: {
-    contactFromStore: function(data) {
+    contactFromStore(data) {
       this.contact = JSON.parse(data);
     }
   }
